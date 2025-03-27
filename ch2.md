@@ -143,7 +143,10 @@
 
 # The Evolution of Data Models
 Data models represent a lot of thought as to what a database is, what it should do, the types of structures that it should employ, and the technology that would be used to implement these structures
-![bg right:55% w:700 data models evolution](restricted/CFig02_05.jpg)
+
+
+<img width="478" alt="image" src="https://github.com/user-attachments/assets/bb41ae3b-6af5-4a22-914b-7f25fdff5a48" />
+
 
 ### **主要資料模型的演進**  
 
@@ -237,8 +240,13 @@ Data models represent a lot of thought as to what a database is, what it should 
 
 資料模型的發展趨勢從早期**結構化、高一致性**的設計，逐漸轉向**靈活性、高擴展性**的架構，未來隨著 AI、大數據、雲端技術的進步，資料庫將更加智能化與自動化。
 
+![螢幕擷取畫面 2025-03-27 221430](https://github.com/user-attachments/assets/dcf51438-6ade-4b41-89fd-247a6abdd244)
+
+
 # Hierarchical Models
 - The hierarchical model organizes the data into a tree structure which consist of a single root node where each record is having a parent record and many child records and expands like a tree
+
+
 ![image](https://github.com/user-attachments/assets/de39bbe9-1352-4cd8-a652-96180b58e9b7)
 
 # Network Models
@@ -268,21 +276,8 @@ The relational model’s foundation is a mathematical concept known as a relatio
   
 # Relational Diagram
 
-<style>
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-.grid img {
-    width: 100%;
-}
-</style>
+<img width="430" alt="image" src="https://github.com/user-attachments/assets/b21f3909-0cce-405a-b8b8-1f80072ce88d" />
 
-<div class="grid">
-    <img src="restricted/CFig02_01.jpg" alt="Linking relational tables">
-    <img src="restricted/CFig02_02.jpg" alt="A relational diagram">
-</div>
 
 # Supplement of Relational Model
 - Relation schema
@@ -307,7 +302,9 @@ The relational model’s foundation is a mathematical concept known as a relatio
 - Entity – an entity is represented in the ERD by a rectangle (entity box)
 - Attributes – each entity consists of a set of attributes that describes particular characteristics of the entity
 - Relationships – relationships describe associations among data
-![bg right:50% w:600 ER model](restricted/CFig02_03.jpg)
+
+<img width="466" alt="image" src="https://github.com/user-attachments/assets/014237d8-e410-4a75-877b-7f8c1337206a" />
+
 
 - 實體（Entity）– 實體在實體關聯圖（ERD）中由矩形（實體框）表示。  
 - 屬性（Attributes）– 每個實體由一組屬性組成，這些屬性描述了實體的特定特徵。  
@@ -345,7 +342,8 @@ In the object-oriented data model (OODM), both data and its relationship are con
 - OODM 通常使用統一建模語言（UML）類別圖來表示。
 
 # OODM Diagram
-![bg right:70% w:100%](restricted/CFig02_04.jpg)
+<img width="464" alt="image" src="https://github.com/user-attachments/assets/84dc3562-68f3-430c-8193-b1b1d6f6b627" />
+
 
 # ERDM and O/R DBMS
 - The extended relational data model (ERDM) adds many of the OO model’s features within the simpler relational database structure
@@ -413,7 +411,9 @@ Products of O/R DBMS
 
 # Degrees of Data Abstraction
 - External, Conceptual, Internal and Physical levels
-  ![bg right:50% w:600 data abstraction levels](restricted/CFig02_06.jpg)
+
+<img width="464" alt="image" src="https://github.com/user-attachments/assets/4d4b7cd5-6fde-4b49-9767-4f39cb5d6397" />
+
 
 # External Model
 - The end users’ view of the data environment
@@ -421,7 +421,9 @@ Products of O/R DBMS
 - The external views represent **subsets** of the database
   - Easy to scope and communicate specific data required to support targeted end users
   - Ensure **security** constraints in the database design
-  ![bg right:40% w:500 external model](restricted/CFig02_07.jpg)
+
+<img width="519" alt="image" src="https://github.com/user-attachments/assets/a484b8f4-0bb1-4314-8290-916cb33a154a" />
+
 
 # Conceptual Model
 - A **global view** of the entire database by the entire organization
@@ -429,13 +431,17 @@ Products of O/R DBMS
 - Identify and high-level describe main data objects
 - Independent of both software and hardware
 - The term **conceptual design** refers to creating a conceptual data model by ER diagrams
-  ![bg right:40% w:500 conceptual model](restricted/CFig02_08.jpg)
+
+<img width="394" alt="image" src="https://github.com/user-attachments/assets/4bd3bc6c-eb36-4048-ab1c-237b704a36f4" />
+
 
 # Internal Model
 - Use the database constructs of the chosen DBMS to match the conceptual model’s characteristics and constraints to build the internal model
 - The term **logical design** refers to creating a logical data model by a set of SQL statements
 - Software dependent and hardware independent
-![bg right:40% w:500 internal model](restricted/CFig02_09.jpg)
+
+<img width="394" alt="image" src="https://github.com/user-attachments/assets/23251db9-079d-4e44-ae5d-052d25877e2f" />
+
 
 # Physical Model
 - Operates at the lowest level of abstraction, describing which physical storage device the data is saved and how to access the data
@@ -443,7 +449,7 @@ Products of O/R DBMS
 - Both software and hardware dependent
 
 # Levels of Data Abstraction 
-![bg right:65% w:800 internal model](restricted/CTable02_04.jpg)
+<img width="518" alt="image" src="https://github.com/user-attachments/assets/3a8d6f94-b019-4743-8dde-72d3dd6ec3e0" />
 
 # Review Questions
 - Why data models are important?
