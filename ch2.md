@@ -452,11 +452,33 @@ Products of O/R DBMS
 <img width="518" alt="image" src="https://github.com/user-attachments/assets/3a8d6f94-b019-4743-8dde-72d3dd6ec3e0" />
 
 # Review Questions
-- Why data models are important?
-- What are the data model basic building blocks
-- How have the major data models evolved
-- Explain NoSQL characteristics
-- What are the four levels of data abstraction
+1. **Why data models are important?**  
+Data models are important because they serve as a communication tool between different stakeholders (end users, developers, managers) who view data differently. They provide a precise description of data's nature and environment, reducing misunderstandings and ensuring consistency in database design. A well-designed data model is essential for creating an efficient and scalable database system.
+
+2. **What are the data model basic building blocks?**  
+The basic building blocks of a data model are:  
+- **Entity**: A person, thing, or event about which data is collected (e.g., a table in a database).  
+- **Attribute**: A characteristic or property of an entity (e.g., a column in a table).  
+- **Relationship**: An association between entities (e.g., one-to-many, many-to-many, one-to-one).  
+- **Constraint**: A restriction on data to ensure integrity (e.g., salary range, mandatory fields).  
+
+3. **How have the major data models evolved?**  
+Major data models have evolved from hierarchical (tree structure, 1960s) and network (graph structure, 1970s) models to relational (tables with SQL, 1980s–1990s), object-oriented (objects with inheritance, 1990s), and NoSQL (flexible schemas, 2000s–present). Modern trends include cloud-native databases, NewSQL, and AI-integrated systems.  
+
+4. **Explain NoSQL characteristics.**  
+NoSQL databases are:  
+- **Schemaless**: Flexible data structures (e.g., JSON, key-value pairs).  
+- **Horizontally scalable**: Distributed across servers for high volume.  
+- **Non-relational**: No fixed tables or joins.  
+- **Optimized for big data**: Handle unstructured/semi-structured data efficiently.  
+- **Types**: Key-value (Redis), document (MongoDB), columnar (Cassandra), graph (Neo4j).  
+
+5. **What are the four levels of data abstraction?**  
+The four levels are:  
+- **External Model**: End-user views (subsets of data, represented as ER diagrams).  
+- **Conceptual Model**: Global organizational view (ER diagrams, hardware/software independent).  
+- **Internal Model**: DBMS-specific implementation (SQL logical design).  
+- **Physical Model**: Lowest level (storage details, hardware/software dependent).
 
 # Homework #1
 資料庫課程作業(A)
