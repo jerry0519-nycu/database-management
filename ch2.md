@@ -34,11 +34,11 @@
 這些欄位代表「學生」這個實體的各種屬性。
 
 3. 關聯（Relationship）= 表與表之間的連結
-- 定義：關聯描述兩個或多個實體之間的關係，在資料庫中通常透過**外鍵（Foreign Key）**來實現。
+- 定義：關聯描述兩個或多個實體之間的關係，在資料庫中通常透過 **外鍵（Foreign Key）** 來實現。
 - 範例：學生（Student）和課程（Course）之間的關係：
 一個學生可以修多門課（一對多關係）。
 一門課可以有多個學生選修（多對多關係）。
-  - 通常，我們會建立一張**選課表（Enrollment）**來存儲這種關係，其中包含：
+  - 通常，我們會建立一張 **選課表（Enrollment）** 來存儲這種關係，其中包含：
     - Student_ID（對應 Student 表）
     - Course_ID（對應 Course 表）
 4. 約束（Constraint）= 限制條件
@@ -93,7 +93,7 @@
   - 一對多（1:M 或 1..*）：畫家（PAINTER）畫畫（PAINTING）  
   - 多對多（M:N 或 *..*）：員工（EMPLOYEE）學習技能（SKILL）  
   - 一對一（1:1 或 1..1）：員工（EMPLOYEE）管理商店（STORE）  
-- 約束是對資料施加的限制，以幫助資料完整性  
+- 約束是對資料施加的限制，以達成資料完整性  
   - 員工的薪資必須在 6,000 和 350,000 之間  
   - 每個班級必須有且只有一位老師
 
@@ -140,6 +140,8 @@
 # Supplement - Naming Conventions
 [Udemy Video of naming conventions](https://youtu.be/xFs8H_YHqHc?si=2m55anO7oxjQ6a8h)
 [Naming conventions of MySQL](https://medium.com/@centizennationwide/mysql-naming-conventions-e3a6f6219efe)
+
+Encapsulation throughout this video: This tutorial focuses on database table and field naming conventions, emphasizing the importance of consistency and a well-defined approach. It discusses various formats, the significance of terminology, and the need for guidelines at the project's start. Ultimately, a clear naming convention enhances collaboration and efficiency in database management.
 
 # The Evolution of Data Models
 Data models represent a lot of thought as to what a database is, what it should do, the types of structures that it should employ, and the technology that would be used to implement these structures
@@ -253,6 +255,25 @@ Data models represent a lot of thought as to what a database is, what it should 
 - In the network model, the user perceives the network database as a collection of records in 1:M relationships. However, unlike the hierarchical model, the network model allows a record to have more than one parent.
 ![bg right:50% w:600 network model](https://www.myreadingroom.co.in/images/stories/docs/dbms/Network%20Data%20Model.JPG)
 
+在網路模型中，使用者將網路資料庫視為一組具有**一對多（1:M）關係**的記錄集合。然而，與層次模型不同，網路模型允許**一條記錄擁有多個父節點**。  
+
+- **層次模型（Hierarchical Model）**：  
+  - 資料以**樹狀結構**組織，每條記錄（子節點）只能有一個父節點。  
+  - 例如：公司組織架構（一個部門下有多個員工，但每個員工只能屬於一個部門）。  
+
+- **網路模型（Network Model）**：  
+  - 資料以**圖形結構**組織，允許**多對多關係**，一條記錄可連結到多個父節點。  
+  - 例如：學生選課系統（一個學生可選多門課，一門課也可被多個學生選修）。  
+
+### 對比：
+| 特性                | 層次模型                     | 網路模型                     |
+|---------------------|----------------------------|----------------------------|
+| **結構**            | 樹狀（單一父節點）           | 圖形（多父節點）             |
+| **靈活性**          | 低（固定層級）               | 高（複雜關聯）               |
+| **應用場景**        | 早期銀行系統、固定階層資料   | 複雜關聯資料（如訂單系統）   |  
+
+網路模型解決了層次模型在表達複雜關聯上的限制，但因其複雜性，後續逐漸被關聯式模型（Relational Model）取代。
+
 # Database Concepts Inherited from Network Model
 - The <span class="brown-text">**schema**</span> is the conceptual and structural definition of a whole database. Once you claim the schema of a database, it must now no longer be modified often because it will distort the data organization inside the Database. 
 - The <span class="brown-text">**data manipulation language (DML)**</span> defines the way to insert, read, update, delete data in database
@@ -268,11 +289,22 @@ The relational model’s foundation is a mathematical concept known as a relatio
 - Attribute: a named column of a relation.
 - Domain: the set of allowable values for one or more attributes.
 - Tuple: a row of a relation
+  
 ![bg right:40% w:500 relational model](https://www.w3schools.in/wp-content/uploads/2016/08/Relational-Model-Terms.png?ezimgfmt=rs:503x343/rscb53/ng:webp/ngcb52)
 
 - 關聯：一個包含欄位和列的表格。  
 - 屬性：關聯中的一個命名欄位。  
 - 域：一個或多個屬性的可允許值的集合。
+- 元組 : 資料表中的一行
+
+
+| 術語 | 對應資料庫概念 | 範例 | **Domain（值域）** |  
+|------------|--------------|------|------------------|  
+| **Relation** | 資料表（Table） | `Student` | - |  
+| **Attribute** | 欄位（Column） | `Student_ID`, `Name`, `Age`, `Major` | `Student_ID`: 字串（如 "S001"）<br>`Age`: 整數（18~30） |  
+| **Tuple** | 資料列（Row） | `(S001, 張小明, 20, 資工系)` | 必須符合各欄位的 Domain 限制 |  
+
+
   
 # Relational Diagram
 
@@ -285,7 +317,69 @@ The relational model’s foundation is a mathematical concept known as a relatio
 - Degree of a relation
 - Cardinality of a relation
 - Relation state (or relation instance)
+  
 [Relational model terminology](https://youtu.be/Q45sr5p_NmQ?si=cr53etNXoX1BIpLf)
+
+#### 1. Relation Schema (關聯綱要)
+- **定義**：描述關聯的結構，包含關聯名稱和屬性集合
+- **表示法**：R(A₁, A₂,..., Aₙ)
+  - 例如：學生(學號, 姓名, 年齡, 系所)
+- **特點**：
+  - 不包含實際數據
+  - 定義屬性的域名(數據類型)和約束條件
+  - 類似於"表格的藍圖"
+
+#### 2. Relational Database Schema (資料庫綱要)
+- **定義**：一組關聯綱要的集合，加上完整性約束
+- **組成**：
+  - 多個關聯綱要
+  - 屬性間的映射關係
+  - 完整性約束(主鍵、外鍵等)
+- **範例**：
+  - 學生(學號, 姓名, 年齡, 系所)
+  - 課程(課程編號, 課程名, 學分)
+  - 選課(學號, 課程編號, 成績)
+
+#### 3. Degree of a Relation (關聯的維度/屬性數)
+- **定義**：關聯中屬性的數量
+- **計算**：計算關聯綱要中的屬性個數
+- **範例**：
+  - 學生(學號, 姓名, 年齡, 系所) → 維度=4
+  - 課程(課程編號, 課程名) → 維度=2
+
+#### 4. Cardinality of a Relation (關聯的基數/元組數)
+- **定義**：關聯實例中的元組(記錄)數量
+- **特性**：
+  - 隨數據增刪動態變化
+  - 不同時間點可能不同
+- **範例**：
+  - 學生表有100條記錄 → 基數=100
+  - 課程表有30條記錄 → 基數=30
+
+#### 5. Relation State/Instance (關聯狀態/實例)
+- **定義**：特定時間點關聯中的元組集合
+- **特性**：
+  - 關聯的具體數據內容
+  - 隨時間變化而改變
+  - 必須符合關聯綱要的定義
+- **範例**：
+  ```
+  學生實例：
+  | 學號 | 姓名 | 年齡 | 系所 |
+  |------|------|------|------|
+  | S001 | 王明 | 20   | 資工 |
+  | S002 | 李華 | 21   | 電機 |
+  ```
+
+#### 概念對照表
+| 術語 | 中文 | 說明 | 範例 |
+|------|------|------|------|
+| Relation Schema | 關聯綱要 | 表格結構定義 | 學生(學號,姓名,年齡) |
+| Database Schema | 資料庫綱要 | 整個資料庫的結構定義 | 學生+課程+選課表結構 |
+| Degree | 維度 | 屬性(欄位)數量 | 學生表有4個屬性 |
+| Cardinality | 基數 | 記錄(元組)數量 | 學生表有100筆資料 |
+| Relation Instance | 關聯實例 | 特定時間的數據內容 | 當前學生表的所有記錄 |
+
 
 # Entity Relationship Model
 - Although the relational model was a vast improvement over the hierarchical and network models, it still lacked the features that would make it an effective database design tool.
@@ -311,7 +405,43 @@ The relational model’s foundation is a mathematical concept known as a relatio
 - 關聯（Relationships）– 關聯描述了資料之間的聯繫。
 
 # Crow's Foot Notations
+
+**Four basic types of cardinality constraints:**
+
 ![bg right:50% w:600 Crow's Foot notation](https://discourse.omnigroup.com/uploads/default/original/2X/5/54b713a5fe9dc79b458b8afe1a5a148320ba132d.gif)
+
+#### **1. Exactly One (嚴格一個)**
+- **符號表示**：`1` 或 `|`（直線）
+- **意義**：  
+  必須存在**且僅存在一個**對應實體。  
+- **範例**：  
+  「每位學生 **必須** 屬於 **一個且只有一個** 班級」  
+  （學生:班級 = 1:1 強制關係）
+
+#### **2. Zero or One (零或一個)**
+- **符號表示**：`0..1` 或 `○—|`（圓圈加直線）  
+- **意義**：  
+  最多存在一個對應實體，也可能不存在。  
+- **範例**：  
+  「一位員工 **可能** 分配至 **至多一個** 專案，也可能未分配」  
+  （員工:專案 = 0或1的選擇性關係）
+
+#### **3. Zero, One, or More (零、一或多個)**
+- **符號表示**：`*` 或 `○—<`（烏鴉腳符號）  
+- **意義**：  
+  對應實體的數量沒有限制（可以不存在、存在一個或多個）。  
+- **範例**：  
+  「一位顧客 **可以沒有** 訂單，也可以有 **多筆** 訂單」  
+  （顧客:訂單 = 1:N 的常見關係）
+
+#### **4. One or More (至少一個)**
+- **符號表示**：`1..*` 或 `|—<`（直線加烏鴉腳）  
+- **意義**：  
+  必須存在 **至少一個**，且允許多個對應實體。  
+- **範例**：  
+  「一門課程 **必須有** **至少一位** 學生選修，也可以有多位」  
+  （課程:學生 = 強制的1:N關係）
+
 
 # Relational Model vs Entity Relationship Model
 ER Model first, then converted into Relational Model for DBMS implementation.
@@ -323,6 +453,15 @@ Representation|	ER Diagram (graphical)|	Tables (relational schema)
 Elements|	Entities, Attributes, Relationships|	Tables, Attributes, Tuples
 Constraints|	Cardinality in ER Diagram|	Primary/Foreign keys, SQL constraints
 Conversion|	Converted to Relational Model|	Implemented in DBMS
+
+
+| 方面         | ER 模型                  | 關聯模型                  |
+|--------------|--------------------------|--------------------------|
+| 用途         | 概念性資料庫設計          | 邏輯性資料庫實現          |
+| 表示方式     | ER 圖（圖形化）          | 表格（關聯綱要）          |
+| 元素         | 實體、屬性、關係          | 表格、屬性、元組          |
+| 約束         | ER 圖中的基數約束         | 主鍵/外鍵、SQL 約束       |
+| 轉換         | 轉換為關聯模型            | 在 DBMS 中實現            |
 
 # Object-Oriented Model
 In the object-oriented data model (OODM), both data and its relationship are contained in a single structure known as an object
@@ -452,33 +591,11 @@ Products of O/R DBMS
 <img width="518" alt="image" src="https://github.com/user-attachments/assets/3a8d6f94-b019-4743-8dde-72d3dd6ec3e0" />
 
 # Review Questions
-1. **Why data models are important?**  
-Data models are important because they serve as a communication tool between different stakeholders (end users, developers, managers) who view data differently. They provide a precise description of data's nature and environment, reducing misunderstandings and ensuring consistency in database design. A well-designed data model is essential for creating an efficient and scalable database system.
-
-2. **What are the data model basic building blocks?**  
-The basic building blocks of a data model are:  
-- **Entity**: A person, thing, or event about which data is collected (e.g., a table in a database).  
-- **Attribute**: A characteristic or property of an entity (e.g., a column in a table).  
-- **Relationship**: An association between entities (e.g., one-to-many, many-to-many, one-to-one).  
-- **Constraint**: A restriction on data to ensure integrity (e.g., salary range, mandatory fields).  
-
-3. **How have the major data models evolved?**  
-Major data models have evolved from hierarchical (tree structure, 1960s) and network (graph structure, 1970s) models to relational (tables with SQL, 1980s–1990s), object-oriented (objects with inheritance, 1990s), and NoSQL (flexible schemas, 2000s–present). Modern trends include cloud-native databases, NewSQL, and AI-integrated systems.  
-
-4. **Explain NoSQL characteristics.**  
-NoSQL databases are:  
-- **Schemaless**: Flexible data structures (e.g., JSON, key-value pairs).  
-- **Horizontally scalable**: Distributed across servers for high volume.  
-- **Non-relational**: No fixed tables or joins.  
-- **Optimized for big data**: Handle unstructured/semi-structured data efficiently.  
-- **Types**: Key-value (Redis), document (MongoDB), columnar (Cassandra), graph (Neo4j).  
-
-5. **What are the four levels of data abstraction?**  
-The four levels are:  
-- **External Model**: End-user views (subsets of data, represented as ER diagrams).  
-- **Conceptual Model**: Global organizational view (ER diagrams, hardware/software independent).  
-- **Internal Model**: DBMS-specific implementation (SQL logical design).  
-- **Physical Model**: Lowest level (storage details, hardware/software dependent).
+- Why data models are important?
+- What are the data model basic building blocks
+- How have the major data models evolved
+- Explain NoSQL characteristics
+- What are the four levels of data abstraction
 
 # Homework #1
 資料庫課程作業(A)
