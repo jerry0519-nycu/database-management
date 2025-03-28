@@ -13,7 +13,7 @@
   - Entity (table)
   - Attribute (column)
   - Relationship (linkage between tables)
-  - Constrain
+  - Constraint
 - 資料建模是指為特定問題領域（迷你世界）創建具體資料模型的過程。  
 - 資料建模是一個迭代且逐步進行的過程。  
 - 資料模型是對更複雜的現實世界物件的一個相對簡單的表示。  
@@ -176,7 +176,7 @@ Data models represent a lot of thought as to what a database is, what it should 
 
 ### **3. 關聯式資料模型（Relational Model，1980s - 1990s）**  
 - 由 E.F. Codd 於 1970 年代提出，1980 年代開始流行，至今仍是主流。  
-- **結構**：數據存儲在**表格（table）**中，每個表有**欄（column）**與**行（row）**，不同表之間透過**外鍵（Foreign Key）**建立關聯。  
+- **結構**：數據存儲在**表格（table）**中，每個表有**欄（column）**與**行（row）**，不同表之間透過 **外鍵（Foreign Key）** 建立關聯。  
 - **優點**：
   - 具備**SQL（Structured Query Language）**，易於操作與管理。  
   - 符合數據正規化（Normalization），減少冗餘，確保一致性。  
@@ -185,19 +185,40 @@ Data models represent a lot of thought as to what a database is, what it should 
   - 擴展性有限（Scaling Up），大規模數據處理效能下降。  
   - 結構固定，對非結構化數據（如 JSON、圖像）支援不佳。  
 - **應用**：幾乎所有企業應用，如銀行、電商、ERP 系統。  
-- **代表資料庫**：MySQL、PostgreSQL、Oracle、SQL Server。  
+- **代表資料庫**：MySQL、PostgreSQL、Oracle、SQL Server。
+*:SQL（Structured Query Language，結構化查詢語言） 是一種專門用於管理和操作關聯式資料庫（RDBMS）的標準化程式語言。它允許使用者對資料庫進行查詢（Query）、新增（Insert）、修改（Update）、刪除（Delete）等操作，並管理資料庫結構（如創建表、設定權限等）。
 
 ---
 
 ### **4. 物件導向資料模型（Object-Oriented Model，1990s）**  
 - 1990 年代興起，整合物件導向程式設計（OOP）與資料庫技術。  
-- **結構**：數據以**物件（Object）**的方式存儲，支援封裝、繼承等 OOP 特性。  
+- **結構**：數據以 **物件（Object）** 的方式存儲，支援封裝、繼承等 OOP 特性。  
 - **優點**：  
   - 適合複雜數據類型，如多媒體、地理資訊系統（GIS）。  
   - 更適合與物件導向程式語言（如 Java、C++）整合。  
 - **缺點**：查詢效率不如關聯式資料庫，且不易推廣。  
 - **應用**：工程設計、CAD 軟體、3D 模型存儲。  
 - **代表資料庫**：db4o、ObjectDB。  
+
+![image](https://github.com/user-attachments/assets/579f39bc-8204-4185-b7eb-3f403eb7ca71)
+
+| 比較項目       | 物件導向 (OOP)                          | 關聯式資料庫 (SQL)                     |
+|----------------|----------------------------------------|----------------------------------------|
+| **怎麼存資料**  | 用「物件」存，物件可以包物件<br>（例如公司物件裡面包部門物件） | 用「表格」存，表格之間用ID關聯<br>（例如公司表和部門表用公司ID連結） |
+| **關係處理**    | 直接寫在程式碼裡<br>`公司.部門 = 新部門` | 要另外建關聯表<br>`公司表`↔`公司部門關聯表`↔`部門表` |
+| **查詢資料**    | 像寫程式一樣直接呼叫<br>`公司.取得所有部門()` | 要寫SQL指令<br>`SELECT * FROM 部門 WHERE 公司ID=123` |
+| **適合情境**    | 用在程式語言裡<br>(如Java/Python物件) | 用在資料庫系統<br>(如MySQL/Oracle) |
+| **優點**       | 寫程式時很直覺                         | 處理大量資料時效率高                   |
+| **缺點**       | 存到資料庫時要轉換                     | 要一直寫JOIN聯表查詢                   |
+
+### **比喻**
+- **物件導向**像「便當盒」：
+  - 主菜、配菜都放在同一個盒子裡
+  - 打開就直接看到所有東西
+
+- **關聯式資料庫**像「自助餐餐檯」：
+  - 飯、菜、湯都分開放
+  - 要自己拿盤子把想吃的組合起來
 
 ---
 
@@ -239,6 +260,35 @@ Data models represent a lot of thought as to what a database is, what it should 
 | 1990s | 物件導向（Object-Oriented） | 物件存儲，OOP 整合 | ObjectDB、db4o |  
 | 2000s | NoSQL | 非結構化，高擴展性 | MongoDB、Cassandra、Redis |  
 | 2020s | 雲端/分佈式 | 雲端原生、AI 整合 | Spanner、TiDB、Snowflake |  
+
+### **資料模型演進史 + 圖片補充比較表**
+
+---
+
+#### **完整資料模型演進比較表**  
+| 世代 | 時期 | 資料模型 | 代表技術 | 關鍵特性 |
+|------|------|----------|----------|----------|
+| **第一代** | 1960s-1970s | 檔案系統 | IBM VSAM | 無關聯性，僅管理單一檔案 |
+| **第二代** | 1970s | 層次式/網狀 | IMS, IDS-II | 樹狀/圖形結構，需手動導航 | 
+| **第三代** | 1980s | 關聯式 | MySQL, Oracle | 表格結構，SQL標準化查詢 |
+| **第四代** | 1990s | 物件導向 | DB2 UDB | 支援物件繼承、封裝 | 
+| **第五代** | 2000s | XML/混合式 | MongoDB | 半結構化資料，NoSQL興起 | 
+| **新興模型** | 2010s-現在 | NoSQL | Cassandra, Redis | 分散式、高擴展性 | 
+
+---
+
+### **生活化比喻**  
+1. **檔案系統** → **紙本檔案櫃**  
+   - 每份文件獨立存放，要找關聯得自己翻箱倒櫃。  
+2. **層次式(Hierarchical)/網狀模型(Network)** → **家族族譜**  
+   - 層次式：像嚴格的家族樹（爸爸→兒子→孫子）。  
+   - 網狀式：像複雜的社交關係（一個人可有多個上司和朋友）。  
+3. **關聯式模型** → **Excel表格**  
+   - 所有資料整齊分欄分列，用「編號」連結不同表格（如訂單表連客戶表）。  
+4. **物件導向模型** → **樂高積木**  
+   - 每個積木（物件）可嵌套其他積木，組裝方式自由（如公司物件包含部門物件）。  
+5. **NoSQL** → **便利貼牆**  
+   - 資料像便利貼隨意貼，形式不拘（文檔、鍵值、圖形），適合快速擴充。  
 
 資料模型的發展趨勢從早期**結構化、高一致性**的設計，逐漸轉向**靈活性、高擴展性**的架構，未來隨著 AI、大數據、雲端技術的進步，資料庫將更加智能化與自動化。
 
@@ -483,6 +533,13 @@ In the object-oriented data model (OODM), both data and its relationship are con
 # OODM Diagram
 <img width="464" alt="image" src="https://github.com/user-attachments/assets/84dc3562-68f3-430c-8193-b1b1d6f6b627" />
 
+| 差異點 | UML 類別圖 | ER 模型 |
+|---|---|---|
+| **是否含方法** | ✅ 有（如計算金額） | ❌ 無 |
+| **關聯描述** | 強調「行為」<br>（如「下單」動作） | 強調「結構」<br>（如「客戶-訂單」關係） |
+| **多重性標註** | 用數字（`1..*`） | 用符號（如 `o{`） |
+| **細節程度** | 高（連程式邏輯都畫） | 低（只存資料結構） |
+
 
 # ERDM and O/R DBMS
 - The extended relational data model (ERDM) adds many of the OO model’s features within the simpler relational database structure
@@ -492,11 +549,7 @@ In the object-oriented data model (OODM), both data and its relationship are con
 - 基於ERDM的資料庫管理系統（DBMS）稱為物件/關聯資料庫管理系統（O/R DBMS）。
 
 # Comparison of RDBMS, OODBMS and O/R DBMS
-<style scoped>
-table {
-  font-size: 20px;
-}
-</style>
+
 Feature	|RDBMS|	OODBMS|	O/R DBMS
 --------|------------------|--------------------------|-------------------
 Tables & SQL	|✅ Yes	|❌ No|	✅ Yes
@@ -504,6 +557,39 @@ Objects & Classes	|❌ No	|✅ Yes|	✅ Yes
 Inheritance	|❌ No|	✅ Yes|	✅ Yes
 Encapsulation (Methods in DB)|	❌ No|	✅ Yes|	✅ Yes
 Complex Data Types	|❌ No|	✅ Yes|	✅ Yes
+
+1. **關聯式資料庫 (RDBMS) - 用表格存資料，靠 SQL 查詢的傳統資料庫**  
+   - **代表產品**：MySQL、Oracle、SQL Server  
+   - **核心優勢**：標準化 SQL 查詢、交易完整性（ACID）  
+   - **限制**：無法直接儲存物件，需拆解成表格（ORM 轉換）
+   - ERD主要用於RDBMS的設計，另外兩者較不適用
+
+2. **物件導向資料庫 (OODBMS) - 直接存物件，適合複雜結構的現代資料庫**  
+   - **代表產品**：MongoDB（文檔型）、Neo4j（圖形資料庫）  
+   - **核心優勢**：原生支援物件儲存，適合複雜資料結構  
+   - **限制**：缺乏標準查詢語言，學習曲線較陡  
+
+3. **物件/關聯混合資料庫 (O/R DBMS) - 能同時用 SQL 查表格，也能存物件的兩用資料庫**  
+   - **代表產品**：PostgreSQL、Oracle 12c+  
+   - **核心優勢**：同時支援 SQL 和物件特性（如 JSON 欄位、自訂類型）  
+   - **典型應用**：需要兼顧傳統表格與現代物件儲存的系統  
+
+---
+
+### **選擇建議**
+- **用 RDBMS 當你的資料...**  
+  ✅ 高度結構化  
+  ✅ 需要複雜 JOIN 查詢  
+  ✅ 重視交易完整性（如銀行系統）  
+
+- **用 OODBMS 當你的資料...**  
+  ✅ 結構多變（如社交媒體貼文）  
+  ✅ 有複雜階層（如 CAD 設計圖）  
+  ✅ 需要高效能讀寫（如 IoT 即時數據）  
+
+- **用 O/R DBMS 當你...**  
+  ✅ 既要 SQL 查詢又要物件靈活性  
+  ✅ 逐步遷移舊系統到現代架構  
 
 Products of O/R DBMS
 - <span class="small-text">PostgreSQL (most commonly used O/R DBMS)</span>
@@ -590,12 +676,43 @@ Products of O/R DBMS
 # Levels of Data Abstraction 
 <img width="518" alt="image" src="https://github.com/user-attachments/assets/3a8d6f94-b019-4743-8dde-72d3dd6ec3e0" />
 
+
+| 層級         | 抽象化程度 | 關注焦點                  | 獨立於           | 主要使用者       | 實際範例                     |
+|--------------|------------|---------------------------|------------------|------------------|------------------------------|
+| **外部層**<br>(External)    | 最高       | 終端使用者視角<br>(如報表、畫面) | 硬體與軟體       | 應用程式開發者   | 銷售報表、會員管理後台       |
+| **概念層**<br>(Conceptual) | 高         | 全局資料結構<br>(ER 模型)      | 硬體與軟體       | 資料庫設計師     | 企業級 ER 圖                 |
+| **內部層**<br>(Internal)   | 中         | 特定資料庫模型實作<br>(如 SQL Schema) | 硬體             | DBA              | MySQL 的 InnoDB 儲存引擎設定  |
+| **實體層**<br>(Physical)   | 最低       | 硬體儲存細節<br>(磁碟、索引)    | 無（依賴硬體與軟體） | 系統工程師       | 硬碟分區、索引的 B+ Tree 結構 |
+
+
 # Review Questions
-- Why data models are important?
-- What are the data model basic building blocks
-- How have the major data models evolved
-- Explain NoSQL characteristics
-- What are the four levels of data abstraction
+1. **Why data models are important?**  
+Data models are important because they serve as a communication tool between different stakeholders (end users, developers, managers) who view data differently. They provide a precise description of data's nature and environment, reducing misunderstandings and ensuring consistency in database design. A well-designed data model is essential for creating an efficient and scalable database system.
+
+2. **What are the data model basic building blocks?**  
+The basic building blocks of a data model are:  
+- **Entity**: A person, thing, or event about which data is collected (e.g., a table in a database).  
+- **Attribute**: A characteristic or property of an entity (e.g., a column in a table).  
+- **Relationship**: An association between entities (e.g., one-to-many, many-to-many, one-to-one).  
+- **Constraint**: A restriction on data to ensure integrity (e.g., salary range, mandatory fields).  
+
+3. **How have the major data models evolved?**  
+Major data models have evolved from hierarchical (tree structure, 1960s) and network (graph structure, 1970s) models to relational (tables with SQL, 1980s–1990s), object-oriented (objects with inheritance, 1990s), and NoSQL (flexible schemas, 2000s–present). Modern trends include cloud-native databases, NewSQL, and AI-integrated systems.  
+
+4. **Explain NoSQL characteristics.**  
+NoSQL databases are:  
+- **Schemaless**: Flexible data structures (e.g., JSON, key-value pairs).  
+- **Horizontally scalable**: Distributed across servers for high volume.  
+- **Non-relational**: No fixed tables or joins.  
+- **Optimized for big data**: Handle unstructured/semi-structured data efficiently.  
+- **Types**: Key-value (Redis), document (MongoDB), columnar (Cassandra), graph (Neo4j).  
+
+5. **What are the four levels of data abstraction?**  
+The four levels are:  
+- **External Model**: End-user views (subsets of data, represented as ER diagrams).  
+- **Conceptual Model**: Global organizational view (ER diagrams, hardware/software independent).  
+- **Internal Model**: DBMS-specific implementation (SQL logical design).  
+- **Physical Model**: Lowest level (storage details, hardware/software dependent).
 
 # Homework #1
 資料庫課程作業(A)
