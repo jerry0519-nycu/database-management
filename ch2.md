@@ -163,6 +163,8 @@ Data models represent a lot of thought as to what a database is, what it should 
 - **缺點**：不靈活，數據關聯難以修改，不適合多對多關係。  
 - **應用**：早期銀行系統、製造業。  
 
+![image](https://github.com/user-attachments/assets/de39bbe9-1352-4cd8-a652-96180b58e9b7)
+
 ---
 
 ### **2. 網狀資料模型（Network Model，1970s）**  
@@ -171,6 +173,27 @@ Data models represent a lot of thought as to what a database is, what it should 
 - **優點**：比層次模型靈活，適合複雜數據關係。  
 - **缺點**：查詢需要透過指標（pointers）導航，管理困難。  
 - **應用**：政府、企業系統，如早期的航班預訂系統。  
+
+![bg right:50% w:600 network model](https://www.myreadingroom.co.in/images/stories/docs/dbms/Network%20Data%20Model.JPG)
+
+在網路模型中，使用者將網路資料庫視為一組具有**一對多（1:M）關係**的記錄集合。然而，與層次模型不同，網路模型允許**一條記錄擁有多個父節點**。  
+
+- **層次模型（Hierarchical Model）**：  
+  - 資料以**樹狀結構**組織，每條記錄（子節點）只能有一個父節點。  
+  - 例如：公司組織架構（一個部門下有多個員工，但每個員工只能屬於一個部門）。  
+
+- **網路模型（Network Model）**：  
+  - 資料以**圖形結構**組織，允許**多對多關係**，一條記錄可連結到多個父節點。  
+  - 例如：學生選課系統（一個學生可選多門課，一門課也可被多個學生選修）。  
+
+### 對比：
+| 特性                | 層次模型                     | 網路模型                     |
+|---------------------|----------------------------|----------------------------|
+| **結構**            | 樹狀（單一父節點）           | 圖形（多父節點）             |
+| **靈活性**          | 低（固定層級）               | 高（複雜關聯）               |
+| **應用場景**        | 早期銀行系統、固定階層資料   | 複雜關聯資料（如訂單系統）   |  
+
+網路模型解決了層次模型在表達複雜關聯上的限制，但因其複雜性，後續逐漸被關聯式模型（Relational Model）取代。
 
 ---
 
@@ -249,9 +272,7 @@ Data models represent a lot of thought as to what a database is, what it should 
   - **分佈式資料庫（Distributed Database）**：適合全球部署，如 TiDB、YugabyteDB。  
   - **AI/機器學習與資料庫整合**：如 Snowflake 提供智能數據分析。  
 
----
 
-### **結論**
 | 時代 | 資料模型 | 特點 | 代表技術 |  
 |------|---------|------|---------|  
 | 1960s | 層次式（Hierarchical） | 樹狀結構，固定格式 | IBM IMS |  
@@ -261,11 +282,7 @@ Data models represent a lot of thought as to what a database is, what it should 
 | 2000s | NoSQL | 非結構化，高擴展性 | MongoDB、Cassandra、Redis |  
 | 2020s | 雲端/分佈式 | 雲端原生、AI 整合 | Spanner、TiDB、Snowflake |  
 
-### **資料模型演進史 + 圖片補充比較表**
 
----
-
-#### **完整資料模型演進比較表**  
 | 世代 | 時期 | 資料模型 | 代表技術 | 關鍵特性 |
 |------|------|----------|----------|----------|
 | **第一代** | 1960s-1970s | 檔案系統 | IBM VSAM | 無關聯性，僅管理單一檔案 |
@@ -293,36 +310,6 @@ Data models represent a lot of thought as to what a database is, what it should 
 資料模型的發展趨勢從早期**結構化、高一致性**的設計，逐漸轉向**靈活性、高擴展性**的架構，未來隨著 AI、大數據、雲端技術的進步，資料庫將更加智能化與自動化。
 
 ![螢幕擷取畫面 2025-03-27 221430](https://github.com/user-attachments/assets/dcf51438-6ade-4b41-89fd-247a6abdd244)
-
-
-# Hierarchical Models
-- The hierarchical model organizes the data into a tree structure which consist of a single root node where each record is having a parent record and many child records and expands like a tree
-
-
-![image](https://github.com/user-attachments/assets/de39bbe9-1352-4cd8-a652-96180b58e9b7)
-
-# Network Models
-- In the network model, the user perceives the network database as a collection of records in 1:M relationships. However, unlike the hierarchical model, the network model allows a record to have more than one parent.
-![bg right:50% w:600 network model](https://www.myreadingroom.co.in/images/stories/docs/dbms/Network%20Data%20Model.JPG)
-
-在網路模型中，使用者將網路資料庫視為一組具有**一對多（1:M）關係**的記錄集合。然而，與層次模型不同，網路模型允許**一條記錄擁有多個父節點**。  
-
-- **層次模型（Hierarchical Model）**：  
-  - 資料以**樹狀結構**組織，每條記錄（子節點）只能有一個父節點。  
-  - 例如：公司組織架構（一個部門下有多個員工，但每個員工只能屬於一個部門）。  
-
-- **網路模型（Network Model）**：  
-  - 資料以**圖形結構**組織，允許**多對多關係**，一條記錄可連結到多個父節點。  
-  - 例如：學生選課系統（一個學生可選多門課，一門課也可被多個學生選修）。  
-
-### 對比：
-| 特性                | 層次模型                     | 網路模型                     |
-|---------------------|----------------------------|----------------------------|
-| **結構**            | 樹狀（單一父節點）           | 圖形（多父節點）             |
-| **靈活性**          | 低（固定層級）               | 高（複雜關聯）               |
-| **應用場景**        | 早期銀行系統、固定階層資料   | 複雜關聯資料（如訂單系統）   |  
-
-網路模型解決了層次模型在表達複雜關聯上的限制，但因其複雜性，後續逐漸被關聯式模型（Relational Model）取代。
 
 # Database Concepts Inherited from Network Model
 - The <span class="brown-text">**schema**</span> is the conceptual and structural definition of a whole database. Once you claim the schema of a database, it must now no longer be modified often because it will distort the data organization inside the Database. 
@@ -358,7 +345,7 @@ The relational model’s foundation is a mathematical concept known as a relatio
   
 # Relational Diagram
 
-<img width="430" alt="image" src="https://github.com/user-attachments/assets/b21f3909-0cce-405a-b8b8-1f80072ce88d" />
+<img width="630" alt="image" src="https://github.com/user-attachments/assets/b21f3909-0cce-405a-b8b8-1f80072ce88d" />
 
 
 # Supplement of Relational Model
@@ -630,7 +617,7 @@ Products of O/R DBMS
 |-----|-----
 |Structured data with a rigid schema | Unstructured, Semi-structured data with a flexible schema
 |Storage in rows and columns | Data are stored in Key/Value pairs database, Columnar database, Document database, Graph Database.
-|Scale up|Scale out
+|Scale up (變強) |Scale out (變多)
 |SQL server, Oracle, mySQL|MongoDB, HBase, Cassandra
 |SQL language|Solution-specific method
 
@@ -690,7 +677,6 @@ Products of O/R DBMS
 Data models are important because they serve as a communication tool between different stakeholders (end users, developers, managers) who view data differently. They provide a precise description of data's nature and environment, reducing misunderstandings and ensuring consistency in database design. A well-designed data model is essential for creating an efficient and scalable database system.
 
 2. **What are the data model basic building blocks?**  
-The basic building blocks of a data model are:  
 - **Entity**: A person, thing, or event about which data is collected (e.g., a table in a database).  
 - **Attribute**: A characteristic or property of an entity (e.g., a column in a table).  
 - **Relationship**: An association between entities (e.g., one-to-many, many-to-many, one-to-one).  
@@ -700,15 +686,13 @@ The basic building blocks of a data model are:
 Major data models have evolved from hierarchical (tree structure, 1960s) and network (graph structure, 1970s) models to relational (tables with SQL, 1980s–1990s), object-oriented (objects with inheritance, 1990s), and NoSQL (flexible schemas, 2000s–present). Modern trends include cloud-native databases, NewSQL, and AI-integrated systems.  
 
 4. **Explain NoSQL characteristics.**  
-NoSQL databases are:  
 - **Schemaless**: Flexible data structures (e.g., JSON, key-value pairs).  
 - **Horizontally scalable**: Distributed across servers for high volume.  
 - **Non-relational**: No fixed tables or joins.  
 - **Optimized for big data**: Handle unstructured/semi-structured data efficiently.  
 - **Types**: Key-value (Redis), document (MongoDB), columnar (Cassandra), graph (Neo4j).  
 
-5. **What are the four levels of data abstraction?**  
-The four levels are:  
+5. **What are the four levels of data abstraction?**
 - **External Model**: End-user views (subsets of data, represented as ER diagrams).  
 - **Conceptual Model**: Global organizational view (ER diagrams, hardware/software independent).  
 - **Internal Model**: DBMS-specific implementation (SQL logical design).  
