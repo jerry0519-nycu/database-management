@@ -227,6 +227,17 @@ Q: What attribute is proper to use derived attributed, working_year or total_amo
 - **弱實體的識別關係**：  
   - 在 ER 圖中，弱實體與強實體的關係線會加粗表示  
 
+#### 判斷法
+#### **1. 能否獨立存在？**  
+- **強實體**：可以獨立存在（例如：學生、課程）。  
+- **弱實體**：必須依賴強實體才能存在（例如：訂單明細必須依附於訂單）。  
+
+#### **2. 主鍵（PK）是否包含外鍵（FK）？**  
+- **強實體**：主鍵完全獨立（例如：`學號`）。  
+- **弱實體**：主鍵需結合強實體的外鍵（例如：`(訂單ID, 明細編號)`）。  
+
+若一個實體 **必須依賴其他實體才能被唯一識別**（主鍵含外鍵），就是 **弱實體**；否則就是 **強實體**。
+
 # Weak Entity
 - A weak entity is existence-dependent on a strong entity with a strong (identifying) relationship - requires a non-null FK from the related strong entity and form a composite PK.
   - DEPENDENT(<u><b>EMP_NUM, DEP_SID</b></u>, DEP_NAME, DEP_DOB), EMP_NUM is FK,
