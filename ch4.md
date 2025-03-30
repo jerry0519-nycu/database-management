@@ -35,6 +35,8 @@
   - contains entity name
   - entity name is a noun usually written **in all capital letters**. It would depend on your naming convention
 
+<img width="521" alt="image" src="https://github.com/user-attachments/assets/42fcddcd-486c-44d4-ab57-45ccb6c0a80f" />
+
 # Attributes
 - **Attributes** are characteristics of entities
 - **Required attribute** (not null) and **optional attribute** (allow null)
