@@ -78,6 +78,33 @@ PK: in a separated cell with bold and underline font
   - If necessary, replace multi-value attribute by creating several new attributes
   - If necessary, replace multi-value attribute by creating an new entity
 
+1. **「用新增多個屬性來取代多值屬性」**
+   - 當一個屬性可能包含多個值時（例如「電話號碼」可能有多個），可以將該屬性拆分成多個單值屬性（如 phone1, phone2, phone3...）
+   - 適用情境：值的數量固定且很少（通常不超過3-4個）
+   - 缺點：若值數量不固定會造成空間浪費或限制
+
+2. **「用新增實體來取代多值屬性」**
+   - 更正規的解決方案是建立一個新的實體（表）來存放這些多值屬性
+   - 例如：原本的「客戶」表有多個電話號碼，就新增一個「客戶電話」表，用外鍵關聯
+   - 優點：符合資料庫正規化原則（通常是1NF→2NF的過程），可靈活處理任意數量的值
+
+舉例說明：
+原始資料（含多值屬性）：
+```
+客戶(客戶ID, 姓名, 電話[多值])
+```
+
+方法1結果：
+```
+客戶(客戶ID, 姓名, 電話1, 電話2, 電話3)
+```
+
+方法2結果：
+```
+客戶(客戶ID, 姓名)
+客戶電話(記錄ID, 客戶ID, 電話號碼)
+```
+
 <img width="521" alt="image" src="https://github.com/user-attachments/assets/2c32ecd2-a7f6-429a-b368-75f6ba9b0fa0" />
 
 <img width="398" alt="image" src="https://github.com/user-attachments/assets/5b4a6c45-0477-4131-b23b-0a249a8d8d52" />
