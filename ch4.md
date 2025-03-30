@@ -128,6 +128,8 @@ Q: What is the pros and cons between the two replacement approaches?
 <img width="519" alt="image" src="https://github.com/user-attachments/assets/02aa4f75-6f82-4f69-8757-11dfd6deea70" />
 
 **derived attribute在ERD中使用虛線標註**
+
+
 Q: What attribute is proper to use derived attributed, working_year or total_amount?
 | 屬性名稱          | 推薦作為衍生屬性？ | 關鍵理由                                                                 | 潛在風險                                                                 |
 |-------------------|-------------------|--------------------------------------------------------------------------|--------------------------------------------------------------------------|
