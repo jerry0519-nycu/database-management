@@ -389,11 +389,11 @@ DEPENDENT(EMP_NUM, DEP_SID, DEP_NAME, DEP_DOB)
 
 # Implementation Strong / Weak Relationship in DBMS
 - Use a strong relationship when:
-	•	The M-side entity is conceptually a part of the 1-side.
-	•	The M-side object should be destroyed when the 1-side is destroyed (e.g., an employee’s dependant).
+	- The M-side entity is conceptually a part of the 1-side.
+	- The M-side object should be destroyed when the 1-side is destroyed (e.g., an employee’s dependant).
 - Use a weak relationship when:
-	•	The M-site entity can exist independently of the 1-side.
-	•	The M-side object should not be deleted if the 1-side is deleted (e.g., an employee and a department).
+  	- The M-site entity can exist independently of the 1-side.
+	- The M-side object should not be deleted if the 1-side is deleted (e.g., an employee and a department).
 
 # The Order to Load Tables Under 1:M Relationship 
 - Keep in mind that the order in which the tables are created and loaded is very important.
