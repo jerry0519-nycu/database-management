@@ -297,6 +297,77 @@ Considering two entities: EMPLOYEE (strong) and DEPENDENT (weak)
 - 外鍵不可為 NULL (`NOT NULL`)  
 - 關係線在 ER 圖中會加粗表示  
 
+### **1. 強實體（EMPLOYEE）與弱實體（DEPENDENT）的定義**
+- **`EMPLOYEE`（員工）**：  
+  - **強實體**，因為它能獨立存在，且有自己的主鍵（如 `EMP_NUM`）。  
+- **`DEPENDENT`（家屬）**：  
+  - **弱實體**，因為它必須依附於員工（無法獨立存在），且 **無法僅靠自己的屬性唯一識別**。  
+
+---
+
+### **2. 原始設計的問題**
+假設 `DEPENDENT` 初始設計為：  
+```sql
+DEPENDENT(DEP_SID, DEP_NAME, DEP_DOB, EMP_NUM)
+```
+- **`DEP_SID`（家屬身份證號）** 無法單獨作為主鍵，因為：  
+  - 若兩個員工是夫妻（共用同一子女），會導致 `DEP_SID` 重複（同一子女被記錄多次）。  
+  - 例如：員工A和員工B的孩子「王小華」的 `DEP_SID` 相同，但分屬不同員工。  
+- **`EMP_NUM`（員工編號）是外鍵**，指向 `EMPLOYEE` 表，但未納入主鍵。  
+
+**問題**：無法唯一識別「某位員工的某個家屬」。  
+
+---
+
+### **3. 解決方案：擴充主鍵（Combined PK）**
+將 `EMP_NUM` 納入主鍵，形成 **複合主鍵**：  
+```sql
+DEPENDENT(EMP_NUM, DEP_SID, DEP_NAME, DEP_DOB)
+```
+- **複合主鍵 = `(EMP_NUM, DEP_SID)`**  
+  - 確保同一員工的家屬 `DEP_SID` 不重複。  
+  - 不同員工的家屬即使 `DEP_SID` 相同（如夫妻的孩子），也能透過 `EMP_NUM` 區分。  
+
+---
+
+### **4. 更優化的設計：改用 `DEP_NUM` 取代 `DEP_SID`**
+原文提到：  
+> *"DEP_NUM is better than DEP_SID in terms of privacy"*  
+- **隱私考量**：直接使用家屬身份證號（`DEP_SID`）可能涉及隱私問題。  
+- **改用流水號 `DEP_NUM`**：  
+  ```sql
+  DEPENDENT(EMP_NUM, DEP_NUM, DEP_NAME, DEP_DOB)
+  ```
+  - **複合主鍵 = `(EMP_NUM, DEP_NUM)`**  
+  - **`EMP_NUM` 為非空外鍵**（Non-null FK），確保依賴關係。  
+  - 優點：  
+    - 避免暴露敏感資訊（如身份證號）。  
+    - 同一員工的家屬 `DEP_NUM` 可簡單設為 1, 2, 3...（如員工A的家屬1、家屬2）。  
+
+---
+
+### **5. 總結：弱實體的關鍵設計**
+1. **必須與強實體關聯**（透過外鍵 `EMP_NUM`）。  
+2. **主鍵需包含強實體的外鍵**（如 `(EMP_NUM, DEP_NUM)`）。  
+3. **避免使用敏感資訊作為主鍵**（如改用流水號而非身份證號）。  
+
+---
+
+### **範例對比**
+| 設計版本                | 主鍵                | 優缺點                          |
+|-------------------------|---------------------|---------------------------------|
+| 初始設計（`DEP_SID`）   | `DEP_SID`           | 隱私風險，無法處理重複家屬。     |
+| 複合主鍵（`DEP_SID`）   | `(EMP_NUM, DEP_SID)`| 解決重複問題，但仍有隱私疑慮。   |
+| 最佳設計（`DEP_NUM`）   | `(EMP_NUM, DEP_NUM)`| 隱私安全 + 唯一性保證。          |
+
+---
+
+### **ER 圖表示**
+- **`EMPLOYEE`（強實體）**：□  
+  - 主鍵：`EMP_NUM`  
+- **`DEPENDENT`（弱實體）**：■  
+  - 主鍵：`(EMP_NUM, DEP_NUM)`  
+  - 外鍵：`EMP_NUM`（虛線指向 `EMPLOYEE`）  
 
 # Illustrate Relationship Between Weak & Strong Entity
 <img width="322" alt="image" src="https://github.com/user-attachments/assets/3a2ab6de-f78f-4de1-a427-d13800f390e3" />
