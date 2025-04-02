@@ -198,6 +198,7 @@ Design comparison
 
 # Illustration of Design Case 3
 <img width="466" alt="image" src="https://github.com/user-attachments/assets/6ac1ae7d-c3d6-4a14-bf52-8b4112dc00b9" />
+
 Exists a **transitive** relationship between DIVISION and PLAYER via the TEAM entity
 
 # Design Case 4:  Redundant Relationships
