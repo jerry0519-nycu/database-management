@@ -281,7 +281,8 @@ customers 10030 and 12550.
 
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/e0a08374-ee2a-499b-9a20-1f9a4ca4b0dd" />
 
-
+DIVIDE 的核心是：
+「找出在關係 R 中，『完全包含』關係 S 的所有元組（tuples）的鍵值。」
 **DIVIDE** 是關聯式資料庫中的一種集合運算，用於解決「**滿足所有條件**」的查詢問題，類似於「**反向的乘法**」。以下是逐步說明：
 #### **1. 核心概念**  
 - **作用**：找出「**符合所有指定關聯條件**」的記錄。  
