@@ -152,7 +152,9 @@ SELECT is an operator used to select a subset of rows
 <img width="518" alt="image" src="https://github.com/user-attachments/assets/6c6dae2b-d152-4ffa-a9a0-4773abf8552e" />
 
 # Relational Set Operators (PROJECT)
+
 PROJECT is an operator used to select a subset of columns
+
 <img width="518" alt="image" src="https://github.com/user-attachments/assets/a1b2bd18-586e-417d-8e5a-28d015ecf4b6" />
 
 # Relational Set Operators (UNION)
