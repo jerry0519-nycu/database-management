@@ -276,6 +276,8 @@ shown in Figure 3.15.
 # Relational Set Operators (DIVIDE)
 The DIVIDE operator is used to answer questions about one set of data being associated with all values of data in another set of data
 - Determine which customers (on the left), if any, purchased every product shown in P_CODE table (in the middle).
+- The only customers associated with all of products 123456, 234567, and 567890 are
+customers 10030 and 12550.
 
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/e0a08374-ee2a-499b-9a20-1f9a4ca4b0dd" />
 
