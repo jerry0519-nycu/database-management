@@ -10,6 +10,20 @@
 - EERM is the result of adding more object-oriented concept to the original ER model
 - A diagram that uses the EERM is called EER diagram (EERD)
 
+| 比較項目         | 物件導向程式設計 (OOP)                | 程序式程式設計                     |
+|------------------|---------------------------------------|-----------------------------------|
+| 核心單元         | 物件 (Object)                         | 函數 (Function)                   |
+| 程式組織方式     | 物件與互動關係                        | 線性執行的函數序列                |
+| 數據與行為關係   | 封裝在一起 (屬性+方法)                | 分離 (數據結構+操作函數)          |
+| 程式執行流程     | 由物件互動決定                        | 明確的線性執行順序                |
+| 代碼重用機制     | 繼承、組合、多型                      | 函數調用、代碼複製                |
+| 主要特性         | 封裝、繼承、多型、抽象                | 無特別特性                        |
+| 現實世界建模     | 直觀 (模擬真實物件)                   | 較不直觀                          |
+| 典型應用場景     | 大型商業系統、GUI開發                 | 小型工具、算法實現、系統程式       |
+| 代表語言         | Java, C++, C#, Python (OOP部分)       | C, Pascal, BASIC                  |
+| 維護性           | 較高 (結構清晰)                       | 較低 (規模增大時)                 |
+| 學習曲線         | 較陡峭                                | 較平緩                            |
+
 # Entity Supertypes and Subtypes
 - The grouping of employees into various types provides the following two benefits:
   - It avoids unnecessary nulls in attributes when some employees have characteristics that are not shared by other employees
