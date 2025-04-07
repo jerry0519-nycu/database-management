@@ -127,7 +127,7 @@
 # Natural Keys and Primary Keys
 - A natural key is a real-world identifier used to uniquely identify real-world objects, which forms part of end user day-to-day business vocabulary
 - Usually, if an entity has a natural identifier, a data modeler uses it as the primary key of the entity being modeled
-- 自然鍵 是指現實世界中用於唯一識別物件的真實識別符，且屬於終端使用者日常業務詞彙的一部分。
+- 自然鍵 是指現實世界中用於唯一識別物件的真實識別符，且屬於終端使用者日常業務詞彙的一部分(例如:員工編號、學號等)。
 - 通常，若實體具備自然識別符，資料建模者會直接將其作為該實體的主鍵（Primary Key）。
   
 Q: Guess the pros and cons of using nature key
