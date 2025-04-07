@@ -84,7 +84,7 @@ Student ID|Student Name|Fees Paid|Course Name|Class 1|Class 2|Class 3
 
 # Poor Table Structure
 
-<img width="517" alt="image" src="https://github.com/user-attachments/assets/98dfb0e2-42e1-4749-94be-26c234bfcbbf" />
+<img width="750" alt="image" src="https://github.com/user-attachments/assets/98dfb0e2-42e1-4749-94be-26c234bfcbbf" />
 
 - Data inconsistency
 - Difficult to update
