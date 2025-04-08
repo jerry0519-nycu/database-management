@@ -38,7 +38,7 @@ Student ID|Student Name|Fees Paid|Course Name|Class 1|Class 2|Class 3
 4|Matt Long|850|Dentistry
 
 - Attributes: student names, paid fees, registered classes
-- It is not a normalized table (has multiple columns for the same type of data), and there are a few issues with this
+- It is not a normalized table (has multiple columns for the same type of data (class)), and there are a few issues with this
 
 # Data Redundancies Issues - Insert Anomaly
 - If we want to add a new student but did not know their course name
