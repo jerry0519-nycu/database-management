@@ -332,7 +332,7 @@ SELECT * FROM EMPLOYEE RIGHT JOIN DEPARTMENT ON EMPLOYEE.dept_id = DEPARTMENT.de
 3. **右外自連接**:
    - 與左外連接類似但方向相反
    - 王五會出現在右側連接結果中
-</details>
+<\details>
 
 # Relational Set Operators (DIVIDE)
 The DIVIDE operator is used to answer questions about one set of data being associated with all values of data in another set of data
