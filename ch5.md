@@ -275,6 +275,45 @@ Exists a **transitive** relationship between DIVISION and PLAYER via the TEAM en
 
 
 # Review Questions
-- What is an entity supertype, and why is it used?
-- What is the most common design trap, and how does it occur?
-- Describe the characteristics of good primary keys and how to select them
+### 1. What is an entity supertype, and why is it used?
+
+An **entity supertype** is a generic entity that contains common characteristics shared by all its subtypes in a specialization hierarchy. It is used to:
+- Avoid unnecessary NULL values in attributes when some entity instances have characteristics that others don't.
+- Enable specific subtypes to participate in relationships unique to them (e.g., only pilots can be assigned to flights).
+- Centralize shared attributes (e.g., all employees have `EMP_NUM`, `EMP_NAME`) while allowing subtypes (e.g., `PILOT`, `ACCOUNTANT`) to define specialized attributes.
+- Support attribute and relationship inheritance, where subtypes automatically inherit all attributes and relationships from their supertype.
+
+Example:  
+The `EMPLOYEE` supertype (with shared attributes like `EMP_NUM`) has subtypes like `PILOT` (with unique attributes such as `PIL_LICENSE`).
+
+
+### 2. What is the most common design trap, and how does it occur?
+
+The most common design trap is a **fan trap**. It occurs when:  
+- A "1-to-M" relationship links a table that is itself linked by another "1-to-M" relationship, creating an ambiguous join path between three tables.  
+- This produces unintended associations among entities not explicitly modeled.  
+
+**Example**:  
+In a model where `DIVISION` has many `TEAM`s, and `TEAM` has many `PLAYER`s, querying "Which division does Jordan belong to?" requires joining all three tables. Without proper design, the direct path from `PLAYER` to `DIVISION` is unclear, leading to misinterpretation.  
+
+**Solution**:  
+Ensure transitive relationships are explicitly modeled or resolved by restructuring the schema.
+
+### 3. Describe the characteristics of good primary keys and how to select them.
+
+A good primary key should have the following characteristics:  
+1. **Uniqueness**: Guarantees each entity instance is uniquely identifiable (e.g., `EMP_NUM`).  
+2. **Stability**: Should not change over time (e.g., avoid using phone numbers or email addresses).  
+3. **Simplicity**: Preferably a single attribute and numeric (e.g., auto-incremented integers for efficiency).  
+4. **Security-compliant**: Should not expose sensitive information (e.g., avoid SSNs).  
+
+**Selection Guidelines**:  
+- **Natural keys** (e.g., `EMPLOYEE_ID`) can be used if they meet the above criteria.  
+- **Surrogate keys** (e.g., auto-generated `ID`) are preferred when natural keys are unstable or complex.  
+- **Composite keys** are used for:  
+  - Bridge entities in M:N relationships (e.g., `(STUDENT_ID, COURSE_ID)` in an enrollment table).  
+  - Weak entities (e.g., `(EMP_NUM, DEPENDENT_NUM)` for dependents).  
+
+**Example**:  
+In the `EMPLOYEE` table, `EMP_NUM` (a surrogate key) is better than `EMP_SSN` (sensitive) or `EMP_NAME` (non-unique).
+
