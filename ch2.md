@@ -742,7 +742,6 @@ INSERT INTO Students VALUES (
 - **RDBMS**：需要嚴格 ACID 的交易系統（如銀行）。  
 - **OODBMS**：遊戲、CAD 等需高效讀寫物件的場景。  
 - **ORDBMS**：需部分物件特性但不想放棄 SQL 的系統（如地理資訊系統）。  
-
 </details>
 
 Products of O/R DBMS
