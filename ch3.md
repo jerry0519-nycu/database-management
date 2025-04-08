@@ -224,7 +224,9 @@ A right outer join yields all of the rows in the AGENT table, including those th
 do not have matching values in the CUSTOMER table. An example of such a join is
 shown in Figure 3.15.
 
-
+<details>
+<summary>各種Join比較</summary>
+  
 | JOIN 類型       | 定義                                                                 | 結果特點                                                                 |                        
 |----------------|----------------------------------------------------------------------|--------------------------------------------------------------------------|
 | **Inner Join** <br>(內連接) | 只返回兩表中「匹配成功」的記錄                                         | 結果集較小，僅包含有關聯的數據                                           | 
@@ -235,93 +237,9 @@ shown in Figure 3.15.
 | **Right Outer Join** <br>(右外連接) | 返回右表全部記錄 + 左表匹配記錄（無匹配則左表欄位為 NULL）            | 確保右表數據不遺失                                                       | 
 | **Full Outer Join** <br>(全外連接) | 返回兩表所有記錄（無匹配則對面表欄位為 NULL）                         | 最完整的結果集，但效能較差                                               | 
 
-### **Left Outer Join 與 Right Outer Join 圖解比較**
+<\details>
 
-#### **1. 基本定義對比**
-| 操作類型          | 核心邏輯                                                                 | 結果集特點                                                                 |
-|------------------|--------------------------------------------------------------------------|--------------------------------------------------------------------------|
-| **Left Outer Join** <br>(左外連接) | 保留「左表」所有記錄，右表無匹配則填 `NULL`                               | 確保左表資料不遺失（即使無關聯）                                           |
-| **Right Outer Join** <br>(右外連接) | 保留「右表」所有記錄，左表無匹配則填 `NULL`                               | 確保右表資料不遺失（即使無關聯）                                           |
-
-
-##### **原始表格數據**
-- **CUSTOMER 表** (左表)  
-  | CUS_CODE | CUS_LNAME | AGENT_CODE |
-  |----------|-----------|------------|
-  | 1132445  | Walter    | 231        |
-  | 1217782  | Adares    | 125        |
-  | ...      | ...       | ...        |
-
-- **AGENT 表** (右表)  
-  | AGENT_CODE | AGENT_PHONE   |
-  |------------|---------------|
-  | 125        | 6152439887    |
-  | 333        | 9041234445    | ← 無對應客戶 |
-
-##### **Left Outer Join 結果**
-- **保留所有客戶**，無代理的客戶仍列出（`AGENT_*` 欄位為 `NULL`）  
-  | CUS_CODE | CUS_LNAME | AGENT_CODE (CUSTOMER) | AGENT_CODE (AGENT) | AGENT_PHONE   |
-  |----------|-----------|-----------------------|--------------------|---------------|
-  | 1542211  | Smithson  | **421**               | NULL               | NULL          | ← 代理 421 不存在 |
-  | ...      | ...       | ...                   | ...                | ...           |
-
-##### **Right Outer Join 結果**
-- **保留所有代理**，無客戶的代理仍列出（`CUS_*` 欄位為 `NULL`）  
-  | CUS_CODE | CUS_LNAME | AGENT_CODE (CUSTOMER) | AGENT_CODE (AGENT) | AGENT_PHONE   |
-  |----------|-----------|-----------------------|--------------------|---------------|
-  | NULL     | NULL      | NULL                  | **333**            | 9041234445    | ← 代理 333 無客戶 |
-  | ...      | ...       | ...                   | ...                | ...           |
-
-
-# Relational Set Operators (DIVIDE)
-The DIVIDE operator is used to answer questions about one set of data being associated with all values of data in another set of data
-- Determine which customers (on the left), if any, purchased every product shown in P_CODE table (in the middle).
-- The only customers associated with all of products 123456, 234567, and 567890 are
-customers 10030 and 12550.
-
-<img width="600" alt="image" src="https://github.com/user-attachments/assets/e0a08374-ee2a-499b-9a20-1f9a4ca4b0dd" />
-
-DIVIDE 的核心是：
-「找出在關係 R 中，『完全包含』關係 S 的所有元組（tuples）的鍵值。」
-**DIVIDE** 是關聯式資料庫中的一種集合運算，用於解決「**滿足所有條件**」的查詢問題，類似於「**反向的乘法**」。以下是逐步說明：
-#### **1. 核心概念**  
-- **作用**：找出「**符合所有指定關聯條件**」的記錄。  
-- **生活化比喻**：  
-  - 像「找出**修過所有必修課**的學生」或「**供應所有指定產品**的供應商」。  
-- **數學意義**：  
-  若 `A ÷ B = C`，則 `C × B ⊆ A`（C 與 B 的組合必須完全包含於 A 中）。
-
-#### **2. 實際範例**  
-假設有以下表格：  
-- **STUDENT_COURSE（學生選課表）**  
-  | STUDENT_ID | COURSE_ID |  
-  |------------|-----------|  
-  | S001       | C101      |  
-  | S001       | C102      |  
-  | S002       | C101      | ← 只修了 C101  
-  | S003       | C101      |  
-  | S003       | C102      | ← 修了 C101 和 C102  
-
-- **REQUIRED_COURSES（必修課表）**  
-  | COURSE_ID |  
-  |-----------|  
-  | C101      |  
-  | C102      |  
-
-**問題**：找出修過「所有必修課」的學生。  
-**DIVIDE 操作結果**：  
-| STUDENT_ID |  
-|------------|  
-| S001       |  
-| S003       |  
-
-#### **3. 與其他 JOIN 的區別**  
-| 操作        | 用途                          | 範例                              |  
-|------------|-------------------------------|-----------------------------------|  
-| **INNER JOIN** | 找出兩表「匹配」的記錄          | 找出「有選課的學生」               |  
-| **DIVIDE**    | 找出「滿足所有子條件」的記錄    | 找出「修過所有必修課的學生」       |  
-
-#### Natural join vs Right/Left outer join
+### Natural join vs Right/Left outer join
 
 <details> <summary>點擊展開</summary>
 
@@ -415,6 +333,54 @@ SELECT * FROM EMPLOYEE RIGHT JOIN DEPARTMENT ON EMPLOYEE.dept_id = DEPARTMENT.de
    - 與左外連接類似但方向相反
    - 王五會出現在右側連接結果中
 </details>
+
+# Relational Set Operators (DIVIDE)
+The DIVIDE operator is used to answer questions about one set of data being associated with all values of data in another set of data
+- Determine which customers (on the left), if any, purchased every product shown in P_CODE table (in the middle).
+- The only customers associated with all of products 123456, 234567, and 567890 are
+customers 10030 and 12550.
+
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/e0a08374-ee2a-499b-9a20-1f9a4ca4b0dd" />
+
+DIVIDE 的核心是：
+「找出在關係 R 中，『完全包含』關係 S 的所有元組（tuples）的鍵值。」
+**DIVIDE** 是關聯式資料庫中的一種集合運算，用於解決「**滿足所有條件**」的查詢問題，類似於「**反向的乘法**」。以下是逐步說明：
+#### **1. 核心概念**  
+- **作用**：找出「**符合所有指定關聯條件**」的記錄。  
+- **生活化比喻**：  
+  - 像「找出**修過所有必修課**的學生」或「**供應所有指定產品**的供應商」。  
+- **數學意義**：  
+  若 `A ÷ B = C`，則 `C × B ⊆ A`（C 與 B 的組合必須完全包含於 A 中）。
+
+#### **2. 實際範例**  
+假設有以下表格：  
+- **STUDENT_COURSE（學生選課表）**  
+  | STUDENT_ID | COURSE_ID |  
+  |------------|-----------|  
+  | S001       | C101      |  
+  | S001       | C102      |  
+  | S002       | C101      | ← 只修了 C101  
+  | S003       | C101      |  
+  | S003       | C102      | ← 修了 C101 和 C102  
+
+- **REQUIRED_COURSES（必修課表）**  
+  | COURSE_ID |  
+  |-----------|  
+  | C101      |  
+  | C102      |  
+
+**問題**：找出修過「所有必修課」的學生。  
+**DIVIDE 操作結果**：  
+| STUDENT_ID |  
+|------------|  
+| S001       |  
+| S003       |  
+
+#### **3. 與其他 JOIN 的區別**  
+| 操作        | 用途                          | 範例                              |  
+|------------|-------------------------------|-----------------------------------|  
+| **INNER JOIN** | 找出兩表「匹配」的記錄          | 找出「有選課的學生」               |  
+| **DIVIDE**    | 找出「滿足所有子條件」的記錄    | 找出「修過所有必修課的學生」       |  
 
 ### 比較
 
