@@ -235,6 +235,7 @@ Converting to 1NF starts with three steps
 # Conversion to First Normal Form (1NF) - Supplement
 - Row order do not convey any information
 - There is no mixed data types within a column
+- Has **only one** column for the same type of data (ex:class1, class2, class3->class)
 
 # 1NF Step1 - Eliminate Repeating Groups
 Repeating group: a group of entries existing for a single key value
