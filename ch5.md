@@ -130,8 +130,58 @@
 - 自然鍵是指現實世界中用於唯一識別物件的真實識別符，且屬於終端使用者日常業務詞彙的一部分(例如:員工編號、學號等)。
 - 通常，若實體具備自然識別符，資料建模者會直接將其作為該實體的主鍵（Primary Key）。
   
-Q: Guess the pros and cons of using nature key
+Q: Guess the pros and cons of using nature key?
 [7 Database Design Mistake](https://youtu.be/s6m8Aby2at8?si=LsJyqtws-hEz2UyN)
+
+以下為自影片歸納之內容，面板可按三角形展開
+<details>
+<summary><strong>1. 使用業務相關字段作為主鍵</strong></summary>
+
+**問題**：業務相關的字段（如稅號或公司編號）可能會更改，且通常沒有對這些字段的控制。  
+**解決方案**：創建一個名為「主鍵」的新字段（例如「id」或「table_name_ID」），用於唯一標識記錄，並保證不會改變。
+</details>
+
+<details>
+<summary><strong>2. 存儲重複數據</strong></summary>
+
+**問題**：重複存儲某些數據（如年齡）會導致數據不一致，因為其需要依賴於其他字段計算。  
+**解決方案**：只存儲必要的字段，直接從其他字段（如出生日期）計算所需數據，而非重複存儲。
+</details>
+
+<details>
+<summary><strong>3. 在表名中使用空格或引號</strong></summary>
+
+**問題**：在表名中使用空格或引號會導致查詢語句複雜，且容易出錯。  
+**解決方案**：避免在表名中使用空格，使用下劃線（如「customer_order」）來分隔單詞。
+</details>
+
+<details>
+<summary><strong>4. 缺乏或不良的參照完整性</strong></summary>
+
+**問題**：數據庫中的數據質量和有效性得不到保證，可能存在缺失值或不唯一的數據。  
+**解決方案**：設置資料庫約束，如主鍵、外鍵和唯一約束，以強制執行數據完整性和規則。
+</details>
+
+<details>
+<summary><strong>5. 在單一字段中存儲多個信息</strong></summary>
+
+**問題**：將地址等複雜信息存儲在一個字段中，導致無法進行有效的數據驗證和查詢。  
+**解決方案**：將地址分解為多個字段（如街道、城市、郵遞區號等）以提升數據質量與查詢效率。
+</details>
+
+<details>
+<summary><strong>6. 在不同列存儲不同的可選數據類型</strong></summary>
+
+**問題**：將不同類型的電話號碼（如家庭、工作或手機）存儲在不同的列中，可能導致某些列為空。  
+**解決方案**：創建一個專門的電話號碼表，並使用外鍵關聯客戶ID，這樣每個客戶可以有多個電話號碼。
+</details>
+
+<details>
+<summary><strong>7. 使用錯誤的數據類型和大小</strong></summary>
+
+**問題**：不正確的數據類型選擇會導致存儲效率低下和數據集的性能問題。  
+**解決方案**：根據數據的使用情況選擇合適的數據類型與大小，使用數據庫的內置類型來保證數據有效性與性能。
+</details>
 
 # Primary Key Guidelines
 - Unique values
