@@ -225,7 +225,7 @@ do not have matching values in the CUSTOMER table. An example of such a join is
 shown in Figure 3.15.
 
 <details>
-<summary>各種Join比較</summary>
+<summary><strong>各種Join比較</strong></summary>
   
 | JOIN 類型       | 定義                                                                 | 結果特點                                                                 |                        
 |----------------|----------------------------------------------------------------------|--------------------------------------------------------------------------|
@@ -235,13 +235,11 @@ shown in Figure 3.15.
 | **Theta Join** <br>(θ連接) | 使用「不等式」連接（如 >, <）                                        | 用於非等值關係分析                                                       | 
 | **Left Outer Join** <br>(左外連接) | 返回左表全部記錄 + 右表匹配記錄（無匹配則右表欄位為 NULL）            | 確保左表數據不遺失                                                       |
 | **Right Outer Join** <br>(右外連接) | 返回右表全部記錄 + 左表匹配記錄（無匹配則左表欄位為 NULL）            | 確保右表數據不遺失                                                       | 
-| **Full Outer Join** <br>(全外連接) | 返回兩表所有記錄（無匹配則對面表欄位為 NULL）                         | 最完整的結果集，但效能較差                                               | 
+| **Full Outer Join** <br>(全外連接) | 返回兩表所有記錄（無匹配則對面表欄位為 NULL）                         | 最完整的結果集，但效能較差                                         | 
+</details>
 
-<\details>
-
-### Natural join vs Right/Left outer join
-
-<details> <summary>點擊展開</summary>
+<details>
+<summary><strong>Natural join vs left/right outer join</strong></summary>
 
 ## 初始表格範例
 
@@ -332,7 +330,9 @@ SELECT * FROM EMPLOYEE RIGHT JOIN DEPARTMENT ON EMPLOYEE.dept_id = DEPARTMENT.de
 3. **右外自連接**:
    - 與左外連接類似但方向相反
    - 王五會出現在右側連接結果中
-<\details>
+
+這種自連接常用於查找具有相同屬性的記錄(如"查找同部門的其他同事")。
+</details>
 
 # Relational Set Operators (DIVIDE)
 The DIVIDE operator is used to answer questions about one set of data being associated with all values of data in another set of data
