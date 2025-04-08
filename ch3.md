@@ -180,7 +180,7 @@ JOIN allows information to be intelligently combined from two or more tables
   - Equijoin – links tables on the basis of an equality condition that compares specified columns of each table
   - Theta join – links tables using an inequality comparison operator
 - **Left outer join**: yields all of the rows in the first table, including those that do not have a matching value in the second table 
-- Right outer join: yields all of the rows in the second table, including those that do not have matching values in the first table
+- **Right outer join**: yields all of the rows in the second table, including those that do not have matching values in the first table
 
 # Natural Join
 PRODUCT -> SELECT -> PROJECT
