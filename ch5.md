@@ -242,6 +242,8 @@ Design comparison
 - Fig 2: generate many null values
 - Fig 3: duplicated work
 
+<img width="518" alt="image" src="https://github.com/user-attachments/assets/0630fabf-5f67-4397-b3ed-a4ba0dc66ec2" />
+
 # Design Case 2: Maintaining Salary History of Time-Variant Data
 - <span class="small-text">Time-variant data refers to data whose values change over time and the data changes must be retained</span>
 - <span class="small-text">Modeling time-variant data, need a new entity with 1:M relationship to the original entity </span>
