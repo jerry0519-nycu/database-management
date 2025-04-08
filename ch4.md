@@ -70,7 +70,7 @@
 - (CRS_CODE, CLASS_SECTION) is a composite identifier
 
 # Entity's Notation
-Required attribute: bold font
+Required attribute: bold font(粗體字)
 
 PK: in a separated cell with bold and underline font
 
