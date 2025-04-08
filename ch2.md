@@ -578,6 +578,173 @@ Complex Data Types	|❌ No|	✅ Yes|	✅ Yes
   ✅ 既要 SQL 查詢又要物件靈活性  
   ✅ 逐步遷移舊系統到現代架構  
 
+<details>
+  <summary><strong>三種資料庫舉例</strong></summary>
+  
+### **情境描述**  
+假設我們需要儲存以下資訊：  
+1. **學生**：學號、姓名、年齡、聯絡電話（可能有多筆）。  
+2. **課程**：課程代碼、名稱、學分。  
+3. **選課記錄**：學生與課程的關聯，包含成績。  
+
+## **1. RDBMS（關聯式資料庫）**
+**核心**：用 **表格（Table）** 儲存資料，透過外來鍵（Foreign Key）建立關聯。  
+
+### **資料表設計**  
+#### **學生表（Students）**
+| student_id (PK) | name  | age |
+|------------------|-------|-----|
+| "S001"          | "張三" | 20  |
+| "S002"          | "李四" | 22  |
+
+#### **聯絡電話表（Phones）**
+| phone_id (PK) | student_id (FK) | phone_number |
+|---------------|------------------|--------------|
+| 1             | "S001"           | "0912345678" |
+| 2             | "S001"           | "0223456789" |
+
+#### **課程表（Courses）**
+| course_id (PK) | name       | credits |
+|----------------|------------|---------|
+| "C101"         | "資料庫"    | 3       |
+| "C102"         | "演算法"    | 4       |
+
+#### **選課記錄表（Enrollments）**
+| enrollment_id (PK) | student_id (FK) | course_id (FK) | grade |
+|--------------------|------------------|----------------|-------|
+| 1                  | "S001"           | "C101"         | 85    |
+| 2                  | "S001"           | "C102"         | 90    |
+
+### **特點**  
+- **正規化**：資料拆分成多個表格，避免冗餘。  
+- **查詢方式**：需使用 **JOIN** 操作（例如：查詢「張三的成績」需關聯 `Students`、`Enrollments`、`Courses`）。  
+- **缺點**：處理複雜物件（如學生的多筆電話）需額外表格，查詢效率可能較低。  
+
+## **2. OODBMS（物件導向資料庫）**
+**核心**：直接儲存 **物件（Object）**，支援繼承、聚合等 OOP 特性。  
+
+### **物件設計**  
+#### **學生類別（Student）**
+```java
+class Student {
+  String student_id;
+  String name;
+  int age;
+  List<String> phones;  // 直接儲存多筆電話（無需拆表）
+  List<Enrollment> enrollments;  // 儲存選課記錄（物件引用）
+}
+```
+
+#### **課程類別（Course）**
+```java
+class Course {
+  String course_id;
+  String name;
+  int credits;
+}
+```
+
+#### **選課記錄類別（Enrollment）**
+```java
+class Enrollment {
+  Student student;  // 直接引用學生物件
+  Course course;    // 直接引用課程物件
+  int grade;
+}
+```
+
+### **實際儲存範例**  
+```json
+// 學生張三的物件
+{
+  "student_id": "S001",
+  "name": "張三",
+  "age": 20,
+  "phones": ["0912345678", "0223456789"],
+  "enrollments": [
+    {
+      "course": {"course_id": "C101", "name": "資料庫", "credits": 3},
+      "grade": 85
+    },
+    {
+      "course": {"course_id": "C102", "name": "演算法", "credits": 4},
+      "grade": 90
+    }
+  ]
+}
+```
+
+### **特點**  
+- **無需正規化**：物件內可直接嵌套資料（如 `phones` 是陣列，`enrollments` 是物件列表）。  
+- **查詢直接**：例如「取得張三的所有課程」只需讀取 `Student` 物件，無需 JOIN。  
+- **缺點**：複雜查詢（如「全校成績 > 90 的學生」）可能效能較差，且標準化程度低。  
+
+## **3. ORDBMS（物件關聯式資料庫）**
+**核心**：結合 RDBMS 的表格結構 + OODBMS 的物件特性（如自訂型別、陣列）。  
+
+### **資料表設計（以 PostgreSQL 為例）**  
+#### **自訂型別（Type）**
+```sql
+CREATE TYPE phone_type AS (number VARCHAR(20));
+CREATE TYPE enrollment_type AS (
+  course_id VARCHAR(10),
+  grade INT
+);
+```
+
+#### **學生表（Students）**
+```sql
+CREATE TABLE Students (
+  student_id VARCHAR(10) PRIMARY KEY,
+  name VARCHAR(50),
+  age INT,
+  phones phone_type[],  -- 儲存電話陣列（無需拆表）
+  enrollments enrollment_type[]  -- 儲存選課記錄陣列
+);
+```
+
+#### **課程表（Courses）**
+```sql
+CREATE TABLE Courses (
+  course_id VARCHAR(10) PRIMARY KEY,
+  name VARCHAR(50),
+  credits INT
+);
+```
+
+### **實際資料範例**  
+```sql
+-- 插入學生資料（含嵌套物件）
+INSERT INTO Students VALUES (
+  'S001', '張三', 20,
+  ARRAY[('0912345678'), ('0223456789')]::phone_type[],
+  ARRAY[('C101', 85), ('C102', 90)]::enrollment_type[]
+);
+```
+
+### **特點**  
+- **混合優勢**：  
+  - 保留表格結構（支援 SQL 查詢）。  
+  - 允許欄位儲存複雜資料（如陣列、JSON）。  
+- **查詢範例**：  
+  ```sql
+  -- 查詢張三的所有電話
+  SELECT unnest(phones) FROM Students WHERE student_id = 'S001';
+  
+  -- 查詢成績 > 85 的課程（需解開嵌套陣列）
+  SELECT course_id, grade 
+  FROM Students, unnest(enrollments) AS e 
+  WHERE student_id = 'S001' AND e.grade > 85;
+  ```
+- **缺點**：查詢嵌套資料時語法較複雜。  
+
+### **實際應用建議**  
+- **RDBMS**：需要嚴格 ACID 的交易系統（如銀行）。  
+- **OODBMS**：遊戲、CAD 等需高效讀寫物件的場景。  
+- **ORDBMS**：需部分物件特性但不想放棄 SQL 的系統（如地理資訊系統）。  
+
+</details>
+
 Products of O/R DBMS
 - <span class="small-text">PostgreSQL (most commonly used O/R DBMS)</span>
 -	<span class="small-text">Oracle Database (with Object-Relational Features)</span>
