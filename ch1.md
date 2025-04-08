@@ -94,7 +94,7 @@ Collect, store, manage, and use of data within a database environment, including
 - SQL languages (structured query language)
 - Database communication API (application programming interfaces)
   
-![bg right:30% w 80% data dictionary](files/image/fig_data_dictionary.png)
+<img width="524" alt="image" src="https://github.com/user-attachments/assets/f984de03-c2da-4fa1-a766-0107519c20ea" />
 
 # Disadvantages of DBMS
 - Increased costs
