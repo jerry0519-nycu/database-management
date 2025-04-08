@@ -331,8 +331,7 @@ DEPENDENT(EMP_NUM, DEP_SID, DEP_NAME, DEP_DOB)
 ---
 
 ### **4. 更優化的設計：改用 `DEP_NUM` 取代 `DEP_SID`**
-原文提到：  
-> *"DEP_NUM is better than DEP_SID in terms of privacy"*  
+
 - **隱私考量**：直接使用家屬身份證號（`DEP_SID`）可能涉及隱私問題。  
 - **改用流水號 `DEP_NUM`**：  
   ```sql
