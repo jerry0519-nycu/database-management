@@ -10,18 +10,36 @@
 - MySQL is named after co-founder Monty Widenius's daughter, My
 
 # SQL Statement in MySQL
-- SQL keywords are NOT case sensitive: select is the same as SELECT
-- Use semicolon at the end of each SQL statement to separate each SQL statement
+- SQL keywords are NOT case sensitive: select is the same as SELECT **(不分大小寫)**
+- Use semicolon **(;)** at the end of each SQL statement to separate each SQL statement
 - Some of The Most Important SQL Commands
- <span class='small-text'>
-INSERT INTO - [C]eate new data into a database
-SELECT - [R]ead data from a database
-UPDATE - [U]pdates data in a database
-DELETE - [D]eletes data from a database
-CREATE DATABASE - creates a new database; ALTER DATABASE - modifies a database
-CREATE TABLE - creates a new table; ALTER TABLE - modifies a table; DROP TABLE - deletes a table
-CREATE INDEX - creates an index (search key); DROP INDEX - deletes an index</span>
+	- INSERT INTO - [C]reates new data into a database
+	- SELECT - [R]eads data from a database
+	- UPDATE - [U]pdates data in a database
+	- DELETE - [D]eletes data from a database
+	- CREATE DATABASE - creates a new database; ALTER DATABASE - modifies a database
+	- CREATE TABLE - creates a new table; ALTER TABLE - modifies a table; DROP TABLE - deletes a table
+	- CREATE INDEX - creates an index (search key); DROP INDEX - deletes an index</span>
 
+<details>
+<summary><strong>整理表格</strong></summary>
+	
+| SQL 指令          | CRUD 分類 | 功能描述                             |
+|-------------------|-----------|--------------------------------------|
+| INSERT INTO       | [C]reate  | 新增資料至資料庫                     |
+| SELECT           | [R]ead    | 從資料庫讀取資料                     |
+| UPDATE           | [U]pdate  | 更新資料庫中的資料                   |
+| DELETE           | [D]elete  | 從資料庫刪除資料                     |
+| CREATE DATABASE  | -         | 建立新資料庫                         |
+| ALTER DATABASE   | -         | 修改資料庫結構                       |
+| CREATE TABLE     | -         | 建立新資料表                         |
+| ALTER TABLE      | -         | 修改資料表結構                       |
+| DROP TABLE       | -         | 刪除資料表                           |
+| CREATE INDEX     | -         | 建立索引（搜尋鍵值）                 |
+| DROP INDEX       | -         | 刪除索引                             |
+</details>
+
+ 
 # Chapter7: Introduction to Structured Query Language (SQL)
 - SQL is composed of commands that enable users
   -  create database and table structures
@@ -41,17 +59,45 @@ CREATE INDEX - creates an index (search key); DROP INDEX - deletes an index</spa
   - Data control language (DCL): GRANT, REVOKE
 - SQL is a nonprocedural language, including many set operators
 
+### **1. SQL 的標準化機構**
+- **ANSI（美國國家標準協會）**  
+  制定標準化的 SQL 語法，確保不同資料庫系統有一致的基礎規範。
+- **ISO（國際標準化組織）**  
+  國際上採納的 SQL 標準，與 ANSI 標準高度兼容，促進全球通用性。
+
+> 📌 **關鍵點**：ANSI/ISO SQL 是資料庫系統的「共通語言」，但各廠商（如 Oracle、MySQL）可能會有額外擴充功能。
+
+
+### **2. SQL 的功能分類**
+根據 ANSI/ISO 標準，SQL 指令分為四大類別：
+
+| 分類名稱                 | 英文全稱                     | 主要指令範例               | 功能說明                           |
+|--------------------------|-----------------------------|----------------------------|------------------------------------|
+| **資料操作語言 (DML)**   | Data Manipulation Language  | `INSERT`, `SELECT`, `UPDATE`, `DELETE` | 處理資料的「增刪改查」（CRUD）。   |
+| **資料定義語言 (DDL)**   | Data Definition Language    | `CREATE TABLE`, `ALTER TABLE`, `DROP TABLE` | 定義或修改資料庫結構（如表格、索引）。 |
+| **交易控制語言 (TCL)**   | Transaction Control Language| `COMMIT`, `ROLLBACK`, `SAVEPOINT`      | 管理資料庫交易（確保資料一致性）。 |
+| **資料控制語言 (DCL)**   | Data Control Language       | `GRANT`, `REVOKE`          | 控制用戶權限（如存取限制）。       |
+
+### **3. SQL 的特性**
+- **非程序式語言（Nonprocedural）**  
+  使用者只需聲明「要做什麼」（例如 `SELECT * FROM users`），不需指定「如何做」（如迴圈或步驟），由資料庫引擎自行優化執行。
+- **集合操作（Set Operators）**  
+  支援對「資料集合」進行操作（如 `UNION`、`INTERSECT`），而非逐筆處理。
+
 # SQL Data Manipulation Commands
-![bg right:65% w:90%](restricted/CTable07_01.jpg)
+
+<img width="450" alt="image" src="https://github.com/user-attachments/assets/7b3e458e-1295-4e16-a285-52e35c3105f2" />
 
 # SQL Data Definition Commands
-![bg right:65% w:90%](restricted/CTable07_02.jpg)
+
+<img width="450" alt="image" src="https://github.com/user-attachments/assets/f5fe3759-2839-417c-9279-d24492e9cb83" />
 
 # Basic Data Types
 - Numeric
 - Character
 - Date
-![bg right:60% w:100%](restricted/CTable08_01.jpg)
+
+<img width="450" alt="image" src="https://github.com/user-attachments/assets/c78604e7-d408-4f01-9f1f-f7677f5ae5eb" />
 
 # MySQL Data Types
 - String: char, text, binary, blob
@@ -59,11 +105,7 @@ CREATE INDEX - creates an index (search key); DROP INDEX - deletes an index</spa
 - Date: date, time, datetime
 
 # MySQL String Data Types
-<style scoped>
-table {
-  font-size: 20px;
-}
-</style>
+
 Data Type|Description|Max Size|Use Case Example
 ---------|-----------|----------|----------------
 CHAR(n) | Fixed-length string (right-padded with spaces) | 255 chars |country codes
@@ -75,14 +117,25 @@ BLOB | Large binary data| by subtype | Images, files, multimedia
 ENUM | A string object with a predefined set of possible values | 64K values | Status like ('pending', 'shipped')
 SET | A string object that can store multiple predefined values (comma-separated)| 64 members | Tags like ("sports", "music","tech")
 
+
+<details>
+<summary><strong>中文表格</strong></summary>
+	
+| 資料型別      | 說明描述                          | 最大容量       | 使用案例範例               |
+|--------------|----------------------------------|---------------|---------------------------|
+| CHAR(n)      | 固定長度字串（右側補空格）        | 255字元       | 國家代碼、固定長度編號     |
+| VARCHAR(n)   | 可變長度字串                      | 64KB          | 姓名、電子郵件、標題       |
+| TEXT         | 大型文字數據                      | 依子類型決定   | 文章、評論、部落格內容     |
+| BINARY(n)    | 固定長度二進位數據                | 255位元組      | 二進位令牌、雜湊值         |
+| VARBINARY(n) | 可變長度二進位數據                | 64KB          | 壓縮數據、加密內容         |
+| BLOB         | 大型二進位數據                    | 依子類型決定   | 圖片、檔案、多媒體         |
+| ENUM         | 預定義值的字串物件（單選）        | 64K個可能值    | 狀態值（如'待處理','已發貨'）|
+| SET          | 可儲存多個預定義值的字串物件（逗號分隔） | 64個成員      | 標籤（如"運動","音樂","科技"）|
+</details>
+
 [List of MySQL Data Types](https://www.w3schools.com/mysql/mysql_datatypes.asp)
 
 # MySQL Numeric Data Types - Integer
-<style scoped>
-table {
-  font-size: 20px;
-}
-</style>
 
 Data Type | Storage | Range | Example Use Case
 ----------|---------|-------|-----------------
@@ -91,6 +144,73 @@ SMALLINT | 2 bytes | -32,768 to 32,767 | Age field
 MEDIUMINT | 3 bytes | -8,388,608 to 8,388,607 | Moderate row IDs or counts
 INT/INTEGER | 4 bytes | -2.1B to 2.1B | User IDs, product IDs
 BIGINT | 8 bytes | -9.2 quintillion to -9.2 quintillion| Order numbers, financial records
+
+---
+
+### **1. TINYINT**  
+- **儲存空間**：1 位元組（8 bits）  
+- **數值範圍**：  
+  - **有符號 (Signed)**：-128 ～ 127  
+  - **無符號 (Unsigned)**：0 ～ 255  
+- **使用案例**：  
+  適用於儲存小範圍的狀態標記，例如：  
+  - 開關狀態（0 = 關閉，1 = 開啟）  
+  - 布林值替代（1 = 真，0 = 假）  
+
+### **2. SMALLINT**  
+- **儲存空間**：2 位元組（16 bits）  
+- **數值範圍**：  
+  - **有符號**：-32,768 ～ 32,767  
+  - **無符號**：0 ～ 65,535  
+- **使用案例**：  
+  適合中等範圍的整數，例如：  
+  - 年齡（0～120 歲）  
+  - 小型計數器（如訂單數量）  
+
+### **3. MEDIUMINT**  
+- **儲存空間**：3 位元組（24 bits）  
+- **數值範圍**：  
+  - **有符號**：-8,388,608 ～ 8,388,607  
+  - **無符號**：0 ～ 16,777,215  
+- **使用案例**：  
+  用於較大的 ID 或計數，但不需要用到 `INT` 的情況，例如：  
+  - 中型資料表的流水號  
+  - 網站每日訪問次數統計  
+
+### **4. INT / INTEGER**  
+- **儲存空間**：4 位元組（32 bits）  
+- **數值範圍**：  
+  - **有符號**：-2,147,483,648 ～ 2,147,483,647（約 ±21 億）  
+  - **無符號**：0 ～ 4,294,967,295  
+- **使用案例**：  
+  最常用的整數型別，適用於：  
+  - 用戶 ID、商品 ID  
+  - 時間戳記（Unix Timestamp）  
+  - 大多數業務邏輯的數字儲存  
+
+### **5. BIGINT**  
+- **儲存空間**：8 位元組（64 bits）  
+- **數值範圍**：  
+  - **有符號**：-9,223,372,036,854,775,808 ～ 9,223,372,036,854,775,807（約 ±922 京）  
+  - **無符號**：0 ～ 18,446,744,073,709,551,615  
+- **使用案例**：  
+  用於極大範圍的數值，例如：  
+  - 金融交易紀錄（避免溢位）  
+  - 分散式系統的全域唯一 ID（如 Snowflake ID）  
+  - 大型電商平台的訂單編號  
+
+
+### **補充說明**  
+1. **有符號 vs 無符號**：  
+   - 若確定數值不會為負數，使用 `UNSIGNED` 可擴大正數範圍。  
+   - 例如 `TINYINT UNSIGNED` 的範圍是 0～255（而非 -128～127）。  
+
+2. **選擇原則**：  
+   - 根據「預期數值範圍」選擇最小夠用的型別，可節省儲存空間並提升效能。  
+   - 例如「年齡」用 `SMALLINT` 就足夠，沒必要用 `INT`。  
+
+3. **資料庫差異**：  
+   - 部分資料庫（如 MySQL、PostgreSQL）對這些型別的實現可能略有不同，需參考官方文件。  
 
 # MySQL Numeric Data Types - Decimal Type
 
@@ -122,11 +242,6 @@ BOOLEAN | TRUE or FALSE
 BOOL | same as BOOLEAN
 
 # MySQL Date and Time Data Types
-<style scoped>
-table {
-  font-size: 20px;
-}
-</style>
 Data Type | Format  | Example Value | Use Case
 ----------|---------|---------------|---------
 DATE | YYYY-MM-DD | '2025-04-22' | birthdays
@@ -151,10 +266,12 @@ one invoice.
 - Some products are not supplied by a vendor.
 
 # Step1B: Deliver ER Diagram
-![bg right:65% w:90%](restricted/CFig07_01.jpg)
+
+<img width="450" alt="image" src="https://github.com/user-attachments/assets/a475f138-5404-41a1-964e-2fe43a4a9efb" />
 
 # Step1C: Data Dict
-![bg right:80% w:90%](restricted/CTable08_02.jpg)
+
+<img width="464" alt="image" src="https://github.com/user-attachments/assets/335bf377-1eec-4a97-b21c-38d9585c1507" />
 
 # Step2: Create Database (MySQL syntax) (DDL)
 ```sql
@@ -372,11 +489,6 @@ LIMIT 5 OFFSET 10;
 ```
 
 # Explanation of SELECT Statement
-<style scoped>
-table {
-  font-size: 20px;
-}
-</style>
 
 Clause|Purpose|Explanation
 ------|-------|-----------
