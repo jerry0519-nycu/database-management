@@ -120,19 +120,37 @@ SET | A string object that can store multiple predefined values (comma-separated
 
 <details>
 <summary><strong>中文表格</strong></summary>
-	
-| 資料型別      | 說明描述                          | 最大容量       | 使用案例範例               |
-|--------------|----------------------------------|---------------|---------------------------|
-| CHAR(n)      | 固定長度字串（右側補空格）        | 255字元       | 國家代碼、固定長度編號     |
-| VARCHAR(n)   | 可變長度字串                      | 64KB          | 姓名、電子郵件、標題       |
-| TEXT         | 大型文字數據                      | 依子類型決定   | 文章、評論、部落格內容     |
-| BINARY(n)    | 固定長度二進位數據                | 255位元組      | 二進位令牌、雜湊值         |
-| VARBINARY(n) | 可變長度二進位數據                | 64KB          | 壓縮數據、加密內容         |
-| BLOB         | 大型二進位數據                    | 依子類型決定   | 圖片、檔案、多媒體         |
-| ENUM         | 預定義值的字串物件（單選）        | 64K個可能值    | 狀態值（如'待處理','已發貨'）|
-| SET          | 可儲存多個預定義值的字串物件（逗號分隔） | 64個成員      | 標籤（如"運動","音樂","科技"）|
+
+| 資料型別      | 說明描述                                      | 最大容量      | 使用案例範例                 | 舉例值                       |
+|---------------|-----------------------------------------------|---------------|------------------------------|------------------------------|
+| `CHAR(n)`     | 固定長度字串（右側補空格）                     | 255 字元      | 國家代碼、固定長度編號       | `'TWN'`、`'A0001'`           |
+| `VARCHAR(n)`  | 可變長度字串                                   | 約 64KB       | 姓名、電子郵件、標題         | `'王小明'`、`'test@mail.com'`|
+| `TEXT`        | 大型文字數據                                   | 依子類型決定   | 文章、評論、部落格內容       | `'這是一篇心得分享……'`        |
+| `BINARY(n)`   | 固定長度二進位數據                             | 255 位元組    | 二進位令牌、雜湊值           | `0x4F6B3A2C…`（16進位表示）  |
+| `VARBINARY(n)`| 可變長度二進位數據                             | 約 64KB       | 壓縮數據、加密內容           | `0x8A3CFF21…`（16進位表示）  |
+| `BLOB`        | 大型二進位數據                                 | 依子類型決定   | 圖片、檔案、多媒體           | JPG 圖片檔、PDF 文件等        |
+| `ENUM`        | 預定義值的字串物件（單選）                     | 最多 64K 個值 | 狀態值（如 '待處理','已發貨'）| `'已發貨'`、`'處理中'`       |
+| `SET`         | 可儲存多個預定義值的字串物件（逗號分隔）       | 最多 64 個成員| 標籤（如 "運動","科技"）     | `'運動,科技'`、`'音樂'`      |
 </details>
 
+<details>
+	<summary><strong>CHAR vs VARCHAR vs integer</strong></summary>
+	
+| 項目               | `CHAR(n)`（固定長度字串）             | `VARCHAR(n)`（可變長度字串）              | `INTEGER`（整數）                         |
+|--------------------|----------------------------------------|--------------------------------------------|-------------------------------------------|
+| **資料型別**       | 字串                                   | 字串                                       | 整數                                       |
+| **長度行為**       | 固定長度，不足會自動在右邊補空格       | 可變長度，依實際字元數儲存                 | 固定長度（4 bytes，儲存整數值）            |
+| **儲存空間**       | 較大（即使字串短也會填補空白）         | 節省空間，僅儲存實際字串長度               | 固定 4 bytes，適用整數值範圍             |
+| **存取效率**       | 較快（固定長度有利於索引）             | 較慢（長度不固定，需額外處理）            | 非常快，專門儲存數值                       |
+| **適用情境**       | 固定格式字串（如國家代碼、身分證號）   | 長度不固定字串（如姓名、電子郵件）        | 整數數據（如年齡、數量、識別碼）         |
+| **最大長度/範圍**  | 最多 255 字元                          | 最多 65,535 bytes（含行內其他欄位）        | -2,147,483,648 到 2,147,483,647            |
+| **例子**           | `CHAR(2)`：'TW'、'US'、'JP'（固定2位） | `VARCHAR(50)`：'Alice'、'bob@example.com' | `INTEGER`：25、1001、123456               |
+
+- 用 CHAR：當欄位內容長度固定且查詢頻繁，例如：國家代碼、性別代號、郵遞區號。
+- 用 VARCHAR：當欄位內容長度不一，如：姓名、地址、電子郵件。
+- 用 INTEGER：當儲存數值數據時，適用於年齡、數量、識別碼等數字型資料。
+</details>
+	
 [List of MySQL Data Types](https://www.w3schools.com/mysql/mysql_datatypes.asp)
 
 # MySQL Numeric Data Types - Integer
@@ -215,9 +233,13 @@ BIGINT | 8 bytes | -9.2 quintillion to -9.2 quintillion| Order numbers, financia
 # MySQL Numeric Data Types - Decimal Type
 
 - Exact, stored as string-like binary, no precision loss
+-  **精確儲存**：以類似字串的二進位格式儲存，不會有四捨五入或精度誤差的問題。這點對財務應用非常關鍵，例如不能讓 $0.01 的誤差累積。
 - Slower for math operations
+- **數學運算較慢**：因為不是直接以浮點數方式儲存，運算時需要額外轉換與處理，因此效能比不上 `FLOAT` 或 `DOUBLE`。
 - DECIMAL(10, 2): 12345678.90
+- **範例說明**：`DECIMAL(10, 2)` 代表這個數字可以最多有 10 位數，其中小數點後有 2 位，例如 `12345678.90` 是合法的，但 `123456789.01` 就會超出範圍。
 - Financial data, money, tax, rates
+- **使用場景**：特別適合處理**財務數據**，例如金額、稅率、利率等，這些場合都需要高精度、不能有誤差的計算。
 
 Data Type | Description | Example
 ----------|-------------|------------------
@@ -225,15 +247,36 @@ DECIMAL(5,2) | 5 digits total, 2 after decimal precise | -999.99 ~ 999.99
 NUMERIC(5,2) | Alias of DECIMAL
 
 # MySQL Numeric Data Types - Floating-Point Type
-- Approximate, stored as binary float, can lose precision
-- Faster and uses less storage
-- DOUBLE -> 3.14159265358979
-- Scientific data, measurements
+- **Approximate, stored as binary float, can lose precision**  
+  ⚠️ **近似值**：以二進位浮點數格式儲存，**無法保證每個數值都精確表示**，在某些位數後可能會有誤差，例如 `0.1 + 0.2 ≠ 0.3`。
+- **Faster and uses less storage**  
+  🚀 **速度快、佔用空間小**：由於硬體直接支援浮點運算，因此在需要大量數值運算時非常有效率，也比 `DECIMAL` 節省儲存空間。
+- **DOUBLE -> 3.14159265358979**  
+  🔍 **範例說明**：`DOUBLE` 可以表示非常長的浮點數，例如圓周率的多位數表示，但仍然是近似值而非精確儲存。
+- **Scientific data, measurements**  
+  🔬 **使用場景**：適合**科學計算、測量數據、感測器資料**等，不強求每一位數精確但需要浮點範圍大的情境。
  
 Data Type | Storage | Example Use Case | Precision
 ----------|---------|------------------|----------
 FLOAT | 4 bytes |  Weight: 12.34 | ~7 digits
 DOUBLE | 8 bytes | GPS coordinates: 25.036793, 121.564558 | ~15 to 16 digits
+
+<details>
+	<summary><strong>decimal vs floating-point</strong></summary>
+| 項目                         | `DECIMAL(p, s)`                      | `FLOAT` / `DOUBLE`（浮點數型別）                  |
+|------------------------------|--------------------------------------|--------------------------------------------------|
+| **精確度**                  | ✅ 精確儲存，無誤差                   | ❌ 近似值，可能出現精度誤差                       |
+| **儲存方式**                | 類似字串的二進位格式                 | 二進位浮點格式                                    |
+| **數學運算效率**            | 慢（需額外處理）                     | 快（硬體支援）                                   |
+| **儲存空間**                | 較大                                 | 較小（FLOAT 約 4 bytes，DOUBLE 約 8 bytes）     |
+| **適用場景**                | 財務數據（錢、稅、利率）             | 科學數據（測量值、感測器讀數、統計分析）         |
+| **範例**                    | `DECIMAL(10, 2)` → `12345678.90`     | `DOUBLE` → `3.14159265358979`                    |
+| **是否支援小數位控制**      | ✅ 可以指定精度與小數位              | ❌ 無法保證控制到第幾位小數                        |
+| **ANSI SQL 標準支援**       | ✅ 標準明確支援                       | ✅ 標準支援但注意精度問題                         |
+ 
+- **處理錢** → 用 `DECIMAL`（絕不能出錯）  
+- **處理科學、統計、感測器資料** → 用 `FLOAT` / `DOUBLE`（需要速度與範圍）
+</details>
 
 # MySQL Numeric Data Types - Boolean Type
 Data Type | Example Use Case
@@ -249,6 +292,28 @@ DATETIME | YYYY-MM-DD HH:MM:SS | '2025-04-22 13:45:00' | Exact date & time of an
 TIMESTAMP | YYYY-MM-DD HH:MM:SS | '2025-04-22 05:00:00' | Auto-tracking changes, auditing
 TIME | HH:MM:SS | '14:30:00' | Duration, business hours
 YEAR | YYYY | '2025' | product release year
+
+| 資料型別（Data Type） | 格式（Format）            | 範例值（Example Value）     | 使用情境（Use Case）                   |
+|------------------------|----------------------------|------------------------------|-----------------------------------------|
+| `DATE`                 | `YYYY-MM-DD`               | `'2025-04-22'`               | 生日、日期欄位                          |
+| `DATETIME`             | `YYYY-MM-DD HH:MM:SS`      | `'2025-04-22 13:45:00'`      | 活動的精確日期與時間                    |
+| `TIMESTAMP`            | `YYYY-MM-DD HH:MM:SS`      | `'2025-04-22 05:00:00'`      | 自動紀錄變更時間、審核紀錄              |
+| `TIME`                 | `HH:MM:SS`                 | `'14:30:00'`                 | 時段長度、營業時間                      |
+| `YEAR`                 | `YYYY`                     | `'2025'`                     | 產品上市年份、年份欄位                  |
+
+<details>
+	<summary><strong>datetime vs timestamp</strong></summary>
+	
+| 項目             | `DATETIME`                            | `TIMESTAMP`                               |
+|------------------|----------------------------------------|-------------------------------------------|
+| **格式**         | `YYYY-MM-DD HH:MM:SS`                 | `YYYY-MM-DD HH:MM:SS`                     |
+| **儲存方式**     | 絕對時間（與時區無關）               | 相對時間（會依據伺服器時區轉換）         |
+| **範圍**         | `'1000-01-01 00:00:00'` ~ `'9999-12-31 23:59:59'` | `'1970-01-01 00:00:01'` ~ `'2038-01-19 03:14:07'`（Unix 時間範圍） |
+| **是否受時區影響** | ❌ 不受影響                           | ✅ 儲存時會根據時區轉為 UTC，查詢時轉回 |
+| **自動更新支援** | ❌ 不自動更新                         | ✅ 可設為 `DEFAULT CURRENT_TIMESTAMP` 或 `ON UPDATE` 自動更新 |
+| **儲存空間**     | 8 bytes                               | 4 bytes（舊版）/ 7 bytes（新版）          |
+| **適用情境**     | 儲存事件發生的絕對時間（如生日）      | 紀錄資料建立/修改時間、自動追蹤變更       |
+</details>
 
 # Steps to Develop Database
 1. Design ER model (Fig 7.1 or Fig 8.1)
@@ -269,9 +334,22 @@ one invoice.
 
 <img width="450" alt="image" src="https://github.com/user-attachments/assets/a475f138-5404-41a1-964e-2fe43a4a9efb" />
 
-# Step1C: Data Dict
+# Step1C: Data Dictionary
 
 <img width="464" alt="image" src="https://github.com/user-attachments/assets/335bf377-1eec-4a97-b21c-38d9585c1507" />
+
+<details>
+	<summary><strong>常見DDL指令</strong></summary>
+| 指令        | 說明                                  | 範例                                           |
+|-------------|----------------------------------------|------------------------------------------------|
+| `CREATE`    | 建立資料庫、資料表、索引、檢視等      | `CREATE TABLE students (id INT, name VARCHAR(50));` |
+| `ALTER`     | 修改現有的資料表（加欄位、改型別等）   | `ALTER TABLE students ADD email VARCHAR(100);`    |
+| `DROP`      | 刪除資料表或資料庫                    | `DROP TABLE students;`                           |
+| `TRUNCATE`  | 清空資料表內容，但保留表的結構         | `TRUNCATE TABLE students;`                       |
+| `RENAME`    | 更改資料表名稱                        | `RENAME TABLE students TO learners;`            |
+</details>
+	
+
 
 # Step2: Create Database (MySQL syntax) (DDL)
 ```sql
