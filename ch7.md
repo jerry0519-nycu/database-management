@@ -263,6 +263,7 @@ DOUBLE | 8 bytes | GPS coordinates: 25.036793, 121.564558 | ~15 to 16 digits
 
 <details>
 	<summary><strong>decimal vs floating-point</strong></summary>
+	
 | 項目                         | `DECIMAL(p, s)`                      | `FLOAT` / `DOUBLE`（浮點數型別）                  |
 |------------------------------|--------------------------------------|--------------------------------------------------|
 | **精確度**                  | ✅ 精確儲存，無誤差                   | ❌ 近似值，可能出現精度誤差                       |
