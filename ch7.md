@@ -543,8 +543,8 @@ INSERT INTO LINE VALUES(1008,2,'WR3/TT3',3,119.95);
 INSERT INTO LINE VALUES(1008,3,'23109-HB',1,9.95);
 ```
 
-# Data in Database
-![bg right:70% w:90%](restricted/CFig08_02.jpg)
+# Data Manipulation Commands
+<img width="460" alt="image" src="https://github.com/user-attachments/assets/1b29de27-14d2-41fa-8162-006829885a23" />
 
 # Basic SELECT Syntax (DML)
 ```sql
