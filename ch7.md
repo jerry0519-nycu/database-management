@@ -415,6 +415,57 @@ CREATE TABLE CUSTOMER (
   PRIMARY KEY (CUS_CODE),
   CONSTRAINT CUS_UI1 UNIQUE(CUS_LNAME,CUS_FNAME, CUS_PHONE));
 ```
+<details>
+	<summary><strong>constraint用法</strong></summary>
+
+#### CONSTRAINT 的基本語法
+
+在 SQL 的 CREATE TABLE 語句中，CONSTRAINT 用於定義表級約束，其基本語法結構如下：
+
+```sql
+CONSTRAINT constraint_name constraint_type (column_list)
+```
+
+在範例中：
+```sql
+CONSTRAINT CUS_UI1 UNIQUE(CUS_LNAME,CUS_FNAME, CUS_PHONE)
+```
+
+這表示：
+- 創建一個名為 `CUS_UI1` 的約束
+- 約束類型是 `UNIQUE` (唯一性約束)
+- 應用於 `CUS_LNAME`, `CUS_FNAME`, `CUS_PHONE` 這三個欄位的組合
+
+## 為什麼不需要加上 } 符號
+
+1. **SQL 語法標準**：SQL 使用分號 `;` 作為語句結束符號，而不是像程式語言那樣使用大括號 `{}` 來界定區塊。
+
+2. **CREATE TABLE 結構**：CREATE TABLE 語句本身就是一個完整的語句，其內容由括號 `()` 包含，所有列定義和約束都在這對括號內完成。
+
+3. **約束定義位置**：約束可以：
+   - 直接寫在欄位定義後面（行內約束）
+   - 或在所有欄位定義後單獨聲明（表級約束）
+   兩種方式都不需要額外的結束符號。
+
+## 其他常見約束類型
+
+除了 UNIQUE 約束外，CONSTRAINT 還可用於定義：
+
+```sql
+-- 主鍵約束
+CONSTRAINT PK_CUSTOMER PRIMARY KEY (CUS_CODE)
+
+-- 外鍵約束
+CONSTRAINT FK_ORDERS_CUSTOMER FOREIGN KEY (CUS_CODE) REFERENCES CUSTOMER(CUS_CODE)
+
+-- 檢查約束
+CONSTRAINT CHK_BALANCE CHECK (CUS_BALANCE >= 0)
+
+-- 默認值 (通常直接寫在列定義中，不用CONSTRAINT)
+CUS_BALANCE NUMERIC(9,2) DEFAULT 0.00
+```
+SQL 語法使用分號 `;` 表示語句結束，而不是使用大括號，這是 SQL 標準語法的設計。
+</details>
 
 # Create INVOICE Table
 ```sql
@@ -580,6 +631,21 @@ HAVING AVG(salary) > 50000 | Group filter | Only show departments where the aver
 ORDER BY avg_salary DESC | Sort | Sorts the result by average salary in descending order
 LIMIT 5 OFFSET 10 | Pagination | Skips the first 10 rows and returns the next 5
 
+<details>
+	<summary><strong>中文表格</strong></summary>
+
+| 子句 (Clause)               | 用途 (Purpose)            | 解釋 (Explanation)                                                                 |
+|---------------------------|--------------------------|-----------------------------------------------------------------------------------|
+| SELECT department, COUNT(*), AVG(salary) | 選擇要檢索的欄位        | 選取部門名稱、員工人數和平均薪資                                                  |
+| FROM employees             | 資料來源表               | 從員工表中獲取資料                                                                |
+| WHERE status = 'active'    | 篩選資料列               | 只包含目前狀態為「在職」的員工                                                    |
+| GROUP BY department        | 分組                    | 按部門分組資料                                                                    |
+| HAVING AVG(salary) > 50000 | 分組後篩選              | 只顯示平均薪資超過 50,000 的部門                                                  |
+| ORDER BY avg_salary DESC   | 排序                    | 按平均薪資由高到低排序結果                                                        |
+| LIMIT 5 OFFSET 10          | 分頁處理                | 跳過前 10 筆資料，返回接下來的 5 筆資料                                           |
+
+</details>
+
 # SELECT Clause
 - SELECT – specifies the attributes to be returned (column name or *)
 - FROM – specifies the table(s)
@@ -609,6 +675,89 @@ FROM EPPS_SALECO.PRODUCT;
 SELECT P_CODE, P_DESCRIPT AS DESCRIPTION, P_PRICE AS "UNIT PRICE", P_QOH AS QTY  
 FROM PRODUCT;
 ```
+<details>
+	<summary><strong>Alias(別名)的本質與概念</strong></summary>
+	
+**Alias（別名）** 在 SQL 中是一種「**臨時命名**」的機制，用來簡化或重新定義資料庫物件（如表、欄位、計算結果）在查詢中的顯示名稱或引用方式。它的核心概念是：
+
+#### **1. Alias 的本質**
+- **不是永久修改**：只是「**當前查詢有效**」的暫時名稱，不影響資料庫實際結構。
+- **不改變原始資料**：僅改變查詢結果的「顯示名稱」或「引用方式」。
+- **純粹為了方便**：讓 SQL 更易讀、易寫，尤其在複雜查詢時特別有用。
+  
+#### **2. Alias 的兩種主要類型**
+##### **(1) Column Alias（欄位別名）**
+- **用途**：替換「欄位名稱」或「計算結果」的顯示名稱。
+- **範例**：
+  ```sql
+  SELECT 
+      employee_id AS "員工編號",
+      salary * 12 AS "年薪"  -- 把計算結果命名為「年薪」
+  FROM employees;
+  ```
+
+##### **(2) Table Alias（表格別名）**
+- **用途**：簡化表名稱（尤其在多表 JOIN 時避免衝突）。
+- **範例**：
+  ```sql
+  SELECT e.name, d.department_name
+  FROM employees AS e  -- 把 employees 表簡稱為 e
+  JOIN departments AS d ON e.dept_id = d.id;  -- departments 表簡稱為 d
+  ```
+#### **3. 為什麼需要 Alias？**
+✅ **可讀性**：讓 SQL 更容易理解（例如 `AVG(salary) AS avg_salary` 比直接寫 `AVG(salary)` 直觀）。  
+✅ **避免衝突**：在多表查詢時，用別名區分相同名稱的欄位（例如 `e.salary` vs `m.salary`）。  
+✅ **簡化複雜計算**：替臨時計算的欄位賦予有意義的名稱，方便後續引用。  
+✅ **支援特殊字元**：如果欄位名稱包含空格或保留字，可用別名替代（例如 `"總金額"`）。  
+
+#### **4. 技術層面：Alias 如何運作？**
+- **執行順序**：  
+  SQL 引擎在解析查詢時，會先處理 `FROM`、`WHERE`、`GROUP BY` 等子句，最後才處理 `SELECT` 中的別名。  
+  - 因此：
+    - ✅ 可以在 `ORDER BY`、`HAVING` 使用別名（因為它們在 `SELECT` 之後執行）。  
+    - ❌ **不能在 `WHERE` 使用別名**（因為 `WHERE` 在 `SELECT` 之前執行）。  
+
+- **資料庫差異**：
+  | 資料庫       | 別名語法範例                     | 注意事項                     |
+  |-------------|--------------------------------|----------------------------|
+  | MySQL       | `SELECT salary AS '薪資'`      | 可用單引號或雙引號           |
+  | PostgreSQL  | `SELECT salary AS "薪資"`      | 嚴格區分大小寫，建議用雙引號 |
+  | SQL Server  | `SELECT salary AS [薪資]`      | 常用方括號                 |
+  | Oracle      | `SELECT salary AS "薪資"`      | 雙引號強制區分大小寫        |
+#### **5. 經典應用場景**
+##### **情境 1：計算並重新命名**
+```sql
+SELECT 
+    product_name,
+    price * quantity AS "總銷售額",
+    (price * quantity) * 0.1 AS "稅金"
+FROM orders;
+```
+
+##### **情境 2：多表 JOIN 時避免混淆**
+```sql
+SELECT 
+    e.name AS "員工姓名",
+    d.name AS "部門名稱"
+FROM employees AS e
+JOIN departments AS d ON e.dept_id = d.id;
+```
+
+##### **情境 3：搭配聚合函數與排序**
+```sql
+SELECT 
+    department,
+    AVG(salary) AS avg_salary
+FROM employees
+GROUP BY department
+ORDER BY avg_salary DESC;  -- 用別名排序
+```
+#### **總結：Alias 是什麼？**
+- **本質**：查詢中的「臨時命名」，不影響原始資料。  
+- **用途**：提升可讀性、簡化複雜查詢、避免名稱衝突。  
+- **限制**：不能在 `WHERE` 使用，且僅在當前查詢有效。  
+
+</details>
 
 # Using Computed Columns
 ```sql
