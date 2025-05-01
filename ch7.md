@@ -341,6 +341,7 @@ one invoice.
 
 <details>
 	<summary><strong>常見DDL指令</strong></summary>
+	
 | 指令        | 說明                                  | 範例                                           |
 |-------------|----------------------------------------|------------------------------------------------|
 | `CREATE`    | 建立資料庫、資料表、索引、檢視等      | `CREATE TABLE students (id INT, name VARCHAR(50));` |
