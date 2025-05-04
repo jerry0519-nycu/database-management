@@ -607,6 +607,60 @@ FROM table_name
 [ORDER BY column [ASC|DESC]]
 [LIMIT number OFFSET offset];
 ```
+<details>
+	<summary><strong>SELECT結構</strong></summary>
+	# MySQL SELECT 語句結構解析
+
+這是一個標準的 MySQL SELECT 查詢語句結構，用於從資料表中檢索資料。以下是每個部分的詳細解釋：
+
+#### 基本結構
+```sql
+SELECT column1, column2, ...  -- 選擇要查詢的欄位
+FROM table_name               -- 指定資料來源表
+```
+
+#### 可選子句
+
+##### 1. WHERE 條件
+```sql
+[WHERE condition]
+```
+- **用途**：過濾記錄，只返回符合條件的行
+- **範例**：`WHERE 年齡 > 18 AND 城市 = '台北'`
+
+##### 2. GROUP BY 分組
+```sql
+[GROUP BY column]
+```
+- **用途**：將結果集按指定欄位分組，通常與聚合函數(如COUNT, SUM, AVG等)一起使用
+- **範例**：`GROUP BY 部門` 會將相同部門的記錄分在同一組
+
+##### 3. HAVING 篩選分組
+```sql
+[HAVING condition]
+```
+- **用途**：對GROUP BY產生的分組進行篩選（類似WHERE，但用於分組後）
+- **範例**：`HAVING COUNT(*) > 5` 只顯示記錄數大於5的分組
+
+##### 4. ORDER BY 排序
+```sql
+[ORDER BY column [ASC|DESC]]
+```
+- **用途**：對結果集進行排序
+- **ASC**：升序（預設值）
+- **DESC**：降序
+- **範例**：`ORDER BY 成績 DESC, 姓名 ASC`
+
+##### 5. LIMIT 限制結果數量
+```sql
+[LIMIT number OFFSET offset]
+```
+- **用途**：限制返回的記錄數量和起始位置
+- **number**：要返回的最大記錄數
+- **offset**：跳過的記錄數（從0開始）
+- **簡寫**：`LIMIT offset, number` 與 `LIMIT number OFFSET offset` 等效
+- **範例**：`LIMIT 10 OFFSET 20` 跳過前20筆，返回接下來的10筆記錄
+</details>
 
 # A Complete SELECT Statement
 ```sql
@@ -786,17 +840,116 @@ SELECT DISTINCT V_CODE
 FROM PRODUCT;
 ```
 
+<details>
+	<summary><strong>SELECT DISTINCT用法</strong></summary>
+`SELECT DISTINCT` 是 MySQL 中用來**去除查詢結果中重複值**的指令，它會返回指定欄位的唯一值（不重複的值）。
+#### 基本語法
+
+```sql
+SELECT DISTINCT 欄位名1, 欄位名2, ...
+FROM 表名
+[WHERE 條件];
+```
+
+#### 實際範例
+
+假設有一個「客戶」表：
+
+| 客戶ID | 客戶姓名 | 城市     | 國家   |
+|--------|----------|----------|--------|
+| 1      | 張三     | 台北     | 台灣   |
+| 2      | 李四     | 高雄     | 台灣   |
+| 3      | 王五     | 台北     | 台灣   |
+| 4      | John     | 紐約     | 美國   |
+| 5      | Sarah    | 洛杉磯   | 美國   |
+
+##### 範例1：查詢不重複的城市
+
+```sql
+SELECT DISTINCT 城市 FROM 客戶;
+```
+
+**結果：**
+```
+台北
+高雄
+紐約
+洛杉磯
+```
+
+##### 範例2：查詢不重複的國家
+
+```sql
+SELECT DISTINCT 國家 FROM 客戶;
+```
+
+**結果：**
+```
+台灣
+美國
+```
+
+##### 範例3：多欄位組合不重複
+
+```sql
+SELECT DISTINCT 城市, 國家 FROM 客戶;
+```
+
+**結果：**
+```
+台北    台灣
+高雄    台灣
+紐約    美國
+洛杉磯  美國
+```
+
+#### 與一般 SELECT 的比較
+
+不使用 DISTINCT：
+```sql
+SELECT 城市 FROM 客戶;
+```
+結果會包含重複的「台北」兩次
+
+使用 DISTINCT：
+```sql
+SELECT DISTINCT 城市 FROM 客戶;
+```
+結果中「台北」只會出現一次
+
+#### 注意事項
+1. DISTINCT 作用於**所有選取的欄位**組合
+2. 對 NULL 值的處理：DISTINCT 會將所有 NULL 視為相同值，只返回一個 NULL
+3. 效能影響：DISTINCT 操作需要額外的排序和比較，可能降低查詢效能
+4. 與 GROUP BY 的區別：DISTINCT 只是去除重複，不進行分組計算
+</details>
+
 # FROM Clause Options
 - The FROM clause specifies table(s) which is involved
+   - FROM子句是SQL查詢的基礎，它定義了查詢的數據來源
+   	- 例如：`FROM customers` 表示從customers表中獲取數據
+   	- 可以指定單個表或多個表（用逗號分隔或使用JOIN）
 - Only columns in tables in FROM clause are available throughout the rest of the query
+	-只有在FROM子句中指定的資料表的欄位，才能在查詢的其他部分使用
+   		- SELECT、WHERE、GROUP BY等子句只能引用FROM子句中出現的表欄位
+   		- 如果嘗試使用不在FROM子句中的表欄位，會產生錯誤
+   		- 例如：`SELECT customer_name FROM orders` 會出錯，如果orders表沒有customer_name欄位
 - Multiple tables must be combined using a type of JOIN operation
+	- 多個資料表必須透過某種JOIN操作來結合
+   		- 當查詢需要從多個表獲取數據時，必須明確指定如何連接這些表
+   		- JOIN操作包括：
+     			- INNER JOIN（內連接）：只返回匹配的行
+     			- LEFT JOIN（左連接）：返回左表所有行，右表不匹配則為NULL
+     			- RIGHT JOIN（右連接）：返回右表所有行，左表不匹配則為NULL
+     			- FULL JOIN（全連接）：返回兩表所有行，不匹配則為NULL
+   		- 舊式語法可以用逗號分隔表名，但這實際上是隱式的CROSS JOIN（笛卡爾積），通常不是我們想要的
 
 # ORDER BY Clause Options
 
 ```sql
 SELECT 	columnlist
 FROM 		tablelist
-[ORDER BY	columnlist [ASC|DESC] ];
+[ORDER BY	columnlist [ASC|DESC] ]; ---升序/降序，非必要，不指定時，MySQL 會自動使用 ASC (升序) 作為預設值
 ```  
 ```sql
 SELECT P_CODE, P_DESCRIPT, P_QOH, P_PRICE
@@ -839,6 +992,46 @@ SELECT P_CODE, P_DESCRIPT, P_QOH, P_MIN, P_PRICE
 FROM PRODUCT
 WHERE P_CODE < '1558-QW1';
 ```
+
+<details>
+	<summary><strong>字串比較</strong></summary>
+##### 1. 單引號的意義
+- 用於標示**文字字串**（包含字母、數字、符號的組合）
+- 表示 `'1558-QW1'` 是一個整體的字串值，而不是數學運算
+
+##### 2. 這個比較的實際行為
+當您寫 `P_CODE < '1558-QW1'` 時：
+- 資料庫會**逐字元比較**（從左到右）
+- 比較是基於**字母順序**（ASCII/Unicode 值）
+- 範例比較：
+  - `'1000-AA'` < `'1558-QW1'`（第一個不同字元 '0' < '5'）
+  - `'1558-QV9'` < `'1558-QW1'`（'V' < 'W'）
+  - `'1558-QW'` < `'1558-QW1'`（較短的字串視為較小）
+
+##### 3. 不同資料類型的比較方式
+| 資料類型       | 格式範例       | 比較方式               |
+|---------------|---------------|-----------------------|
+| 數字（整數）   | `WHERE id < 10` | 數值大小比較          |
+| 數字（浮點數） | `WHERE price < 9.99` | 數值大小比較      |
+| 字串（文字）   | `WHERE code < '1558-QW1'` | 字典序比較      |
+| 日期          | `WHERE date < '2023-01-01'` | 時間先後比較    |
+
+##### 4. 常見應用場景
+- 產品編號範圍查詢（如 `P_CODE BETWEEN '1000-AA' AND '2000-ZZ'`）
+- 文字類型的序號過濾
+- 分類代碼的範圍選擇
+
+##### 5. 重要注意事項
+- 在大多數資料庫中，字串比較是**區分大小寫**的（'A' 和 'a' 不同）
+- 若要進行**不區分大小寫**的比較，通常需要用函數轉換：
+  ```sql
+  WHERE UPPER(P_CODE) < '1558-QW1'
+  ```
+- 如果是純數字組成的字串（如 `'123'`），比較結果可能與數字比較不同：
+  - 字串比較：`'9'` > `'100'`（因為 '9' > '1'）
+  - 數字比較：`9` < `100`
+</details>
+
 # Using Comparison Operator on Date Attribute  
 ```sql
 SELECT P_DESCRIPT, P_QOH, P_MIN, P_PRICE, P_INDATE
@@ -851,7 +1044,8 @@ SELECT P_DESCRIPT, P_INDATE, P_PRICE, V_CODE
 FROM PRODUCT
 WHERE P_PRICE < 50 AND P_INDATE > '2021-01-01';
 
-/* use parentheses and compare below two select statements */
+use parentheses and compare below two select statements
+先執行括號內的運算 
 SELECT P_DESCRIPT, P_PRICE, V_CODE
 FROM PRODUCT
 WHERE (V_CODE = 25595 OR V_CODE = 24288) AND P_PRICE > 100;
@@ -859,12 +1053,77 @@ WHERE (V_CODE = 25595 OR V_CODE = 24288) AND P_PRICE > 100;
 SELECT P_DESCRIPT, P_PRICE, V_CODE
 FROM PRODUCT
 WHERE V_CODE = 25595 OR V_CODE = 24288 AND P_PRICE > 100;
--- AND before OR --
+-- AND優先於OR --
 
 SELECT *
 FROM PRODUCT
 WHERE NOT (V_CODE = 21344);
 ``` 
+<details>
+	<summary><strong>邏輯運算子順序表</strong></summary>
+
+#### 標準執行順序（從高到低）
+1. **括號 `( )`** - 最高優先級，強制先執行
+2. **NOT 運算子**
+3. **AND 運算子**
+4. **OR 運算子** - 最低優先級
+
+#### 優先級順序表
+
+| 優先級 | 運算子 | 範例 | 等效寫法 |
+|-------|--------|------|----------|
+| 1 | 括號 | `WHERE (A OR B) AND C` | - |
+| 2 | NOT | `WHERE NOT A = B` | `WHERE A <> B` |
+| 3 | AND | `WHERE A AND B OR C` | `WHERE (A AND B) OR C` |
+| 4 | OR | `WHERE A OR B AND C` | `WHERE A OR (B AND C)` |
+
+#### 實際案例比較
+
+##### 案例1：混合 AND 和 OR
+```sql
+-- 原始寫法（易混淆）
+WHERE A OR B AND C
+
+-- 實際執行順序（AND優先）
+WHERE A OR (B AND C)
+```
+
+##### 案例2：明確使用括號
+```sql
+-- 明確優先順序
+WHERE (A OR B) AND C
+```
+
+##### 案例3：包含 NOT
+```sql
+-- NOT 優先於 AND
+WHERE NOT A = B AND C
+
+-- 實際執行順序
+WHERE (NOT A = B) AND C
+```
+
+#### 重要注意事項
+
+1. **最佳實踐**：當混合使用不同運算子時，**永遠使用括號明確優先順序**，即使您記得優先級規則
+   - 提高可讀性
+   - 避免不同資料庫系統的細微差異
+   - 減少未來維護時的誤解
+
+2. **特殊情況**：
+   - 相同運算子通常從左到右執行
+     ```sql
+     WHERE A AND B AND C  -- 執行順序：(A AND B) AND C
+     ```
+   - IN 運算子的優先級與 OR 相同
+     ```sql
+     WHERE A OR B IN (1,2)  -- 執行順序：A OR (B IN (1,2))
+     ```
+
+3. **效能影響**：
+   - 資料庫優化器可能會重新排列條件順序以優化查詢
+   - 但邏輯結果會保持與優先級規則一致
+</details>
 
 # Special Operators in WHERE Clause
 - BETWEEN – Used to check whether an attribute value is within a range
@@ -872,6 +1131,165 @@ WHERE NOT (V_CODE = 21344);
 - LIKE – Used to check whether an attribute value matches a given string pattern
 - IS NULL – Used to check whether an attribute value is null
 - NOT – Used to negate a condition
+
+<details>
+	<summary><strong>範例</strong></summary>
+	
+#### 1. BETWEEN - 範圍檢查
+
+**用途**：檢查值是否在指定範圍內（包含邊界值）
+
+```sql
+-- 找出價格在 100 到 200 元之間的產品
+SELECT * FROM PRODUCT
+WHERE P_PRICE BETWEEN 100 AND 200;
+
+-- 找出 2023 年 1 月入庫的產品
+SELECT * FROM PRODUCT
+WHERE P_INDATE BETWEEN '2023-01-01' AND '2023-01-31';
+```
+
+#### 2. IN - 值列表檢查
+
+**用途**：檢查值是否匹配列表中的任一值
+
+```sql
+-- 找出供應商代碼為 21344、24288 或 25595 的產品
+SELECT * FROM PRODUCT
+WHERE V_CODE IN (21344, 24288, 25595);
+
+-- 找出位於台北、台中或高雄的客戶
+SELECT * FROM CUSTOMER
+WHERE CUST_CITY IN ('台北', '台中', '高雄');
+```
+
+<details>
+	<summary>BETWEEN vs IN舉例</summary>
+
+```sql	
+-- 使用BETWEEN：查詢價格在50到100元之間的產品
+SELECT * FROM PRODUCT
+WHERE P_PRICE BETWEEN 50.00 AND 100.00;
+-- 等效於：P_PRICE >= 50.00 AND P_PRICE <= 100.00
+
+-- 使用IN：查詢價格正好是50、75或100元的產品
+SELECT * FROM PRODUCT
+WHERE P_PRICE IN (50.00, 75.00, 100.00);
+-- 等效於：P_PRICE = 50.00 OR P_PRICE = 75.00 OR P_PRICE = 100.00
+```
+</details>
+
+#### 3. LIKE - 模式匹配
+
+**用途**：檢查字串是否符合特定模式
+
+```sql
+-- 找出產品描述開頭為 "筆記型" 的產品
+SELECT * FROM PRODUCT
+WHERE P_DESCRIPT LIKE '筆記型%';
+
+-- 找出產品代碼中包含 "USB" 的產品
+SELECT * FROM PRODUCT
+WHERE P_CODE LIKE '%USB%';
+
+-- 找出電話號碼開頭是 "02"（台北地區）的客戶
+SELECT * FROM CUSTOMER
+WHERE CUST_PHONE LIKE '02%';
+
+-- 精確匹配 5 個字元，第3個字元是 A 的產品代碼
+SELECT * FROM PRODUCT
+WHERE P_CODE LIKE '__A__';
+```
+
+<details>
+	<summary>%的用法</summary>
+
+##### 1. 基本功能
+- `%` 可以匹配**任意長度**的字元組合（包括零個字元）
+- 類似於檔案搜尋中的 `*` 符號
+
+##### 2. 不同位置的意義
+
+| 模式範例       | 匹配說明                          | 實際例子                     |
+|----------------|----------------------------------|-----------------------------|
+| `'筆記型%'`    | 以「筆記型」**開頭**的字串        | 筆記型電腦、筆記型配件       |
+| `'%電腦'`      | 以「電腦」**結尾**的字串          | 桌上型電腦、筆記型電腦       |
+| `'%無線%'`     | **包含**「無線」的字串            | 無線滑鼠、藍牙無線耳機       |
+| `'A%B'`        | 以 A **開頭**且以 B **結尾**      | A123B、ACB、AB              |
+
+##### 3. 實際查詢範例
+
+```sql
+-- 找出所有「筆記型」開頭的產品
+SELECT * FROM PRODUCT
+WHERE P_DESCRIPT LIKE '筆記型%';
+
+-- 找出所有「Pro」結尾的產品型號
+SELECT * FROM PRODUCT
+WHERE P_CODE LIKE '%Pro';
+
+-- 找出描述中包含「無線」的產品（不論位置）
+SELECT * FROM PRODUCT
+WHERE P_DESCRIPT LIKE '%無線%';
+
+-- 找出電話區號是「02」開頭的客戶
+SELECT * FROM CUSTOMER
+WHERE CUST_PHONE LIKE '02%';
+```
+
+##### `%` 與 `_` 的區別
+
+另一個常用萬用字元是 `_`（底線），它與 `%` 的主要區別是：
+
+| 萬用字元 | 功能                   | 範例            | 匹配範例        |
+|---------|------------------------|----------------|----------------|
+| `%`     | 匹配**零個或多個**字元 | `'A%'`         | A, AB, ABC     |
+| `_`     | 匹配**恰好一個**字元   | `'A_'`         | AB, AC (不匹配 A) |
+</details>
+
+#### 4. IS NULL - 空值檢查
+
+**用途**：檢查值是否為 NULL
+
+```sql
+-- 找出尚未設定供應商的產品
+SELECT * FROM PRODUCT
+WHERE V_CODE IS NULL;
+
+-- 找出沒有填寫電子郵件的客戶
+SELECT * FROM CUSTOMER
+WHERE CUST_EMAIL IS NULL;
+```
+
+#### 5. NOT - 條件否定
+
+**用途**：反轉條件的結果
+
+```sql
+-- 找出價格不在 100 到 200 元之間的產品
+SELECT * FROM PRODUCT
+WHERE P_PRICE NOT BETWEEN 100 AND 200;
+
+-- 找出非台北、台中、高雄的客戶
+SELECT * FROM CUSTOMER
+WHERE CUST_CITY NOT IN ('台北', '台中', '高雄');
+
+-- 找出產品描述不是以 "筆記型" 開頭的產品
+SELECT * FROM PRODUCT
+WHERE P_DESCRIPT NOT LIKE '筆記型%';
+
+-- 找出已設定供應商的產品
+SELECT * FROM PRODUCT
+WHERE V_CODE IS NOT NULL;
+
+-- 找出不是 21344 供應商的產品（兩種寫法等價）
+SELECT * FROM PRODUCT
+WHERE NOT V_CODE = 21344;
+-- 或
+SELECT * FROM PRODUCT
+WHERE V_CODE <> 21344;
+```
+</details>
 
 # Illustrations of Special Operators
 ```sql
@@ -938,9 +1356,11 @@ JOIN operators are used to combine data from multiple tables
   - Full (outer) join
 
 # JOIN Illustration
-<div class="grid">
-    <img src="files/image/four_join_types.jpg" alt="">
-    <img src="files/image/join_example.jpg" alt="">
+    
+<img width="450" alt="image" src="https://github.com/user-attachments/assets/25ba46ab-0288-4418-9f4a-00572ac1bf46" />
+
+<img width="450" alt="image" src="https://github.com/user-attachments/assets/db552872-dcac-442b-8853-7127ced0ec71" />
+
 </div>
 
 # Three Ways to Do Inner Join (Join)
@@ -961,6 +1381,18 @@ SELECT column-list FROM table1, table2 WHERE table1.column = table2.column
 SELECT P_CODE, P_DESCRIPT, V_CODE, V_NAME, V_AREACODE, V_PHONE
 FROM PRODUCT JOIN VENDOR USING (V_CODE);
 ```
+
+# Illustrated by Relational Algebra Natural Join
+PRODUCT -> SELECT -> PROJECT
+<details>
+	<summary><strong>圖示</strong></summary>
+<img width="395" alt="image" src="https://github.com/user-attachments/assets/0e73505e-8b20-4bf9-b03e-ee01b07f5777" />
+<img width="394" alt="image" src="https://github.com/user-attachments/assets/c52f8621-f1dd-4c8e-a9f1-86d140d77f90" />
+<img width="390" alt="image" src="https://github.com/user-attachments/assets/133c9fc2-dd99-4105-8924-92b6c9ee362b" />
+<img width="393" alt="image" src="https://github.com/user-attachments/assets/1a856f89-c22d-4dd2-a420-bb509227065f" />
+</details>
+
+
 # Example of JOIN ON
 ```sql
 SELECT INVOICE.INV_NUMBER, PRODUCT.P_CODE, P_DESCRIPT, LINE_UNITS, LINE_PRICE
