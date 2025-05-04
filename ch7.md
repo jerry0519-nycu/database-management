@@ -930,10 +930,10 @@ SELECT DISTINCT 城市 FROM 客戶;
    	- 例如：`FROM customers` 表示從customers表中獲取數據
    	- 可以指定單個表或多個表（用逗號分隔或使用JOIN）
 - Only columns in tables in FROM clause are available throughout the rest of the query
-	-只有在FROM子句中指定的資料表的欄位，才能在查詢的其他部分使用
-   		- SELECT、WHERE、GROUP BY等子句只能引用FROM子句中出現的表欄位
-   		- 如果嘗試使用不在FROM子句中的表欄位，會產生錯誤
-   		- 例如：`SELECT customer_name FROM orders` 會出錯，如果orders表沒有customer_name欄位
+  -只有在FROM子句中指定的資料表的欄位，才能在查詢的其他部分使用
+  	- SELECT、WHERE、GROUP BY等子句只能引用FROM子句中出現的表欄位
+  	- 如果嘗試使用不在FROM子句中的表欄位，會產生錯誤
+  	- 例如：`SELECT customer_name FROM orders` 會出錯，如果orders表沒有customer_name欄位
 - Multiple tables must be combined using a type of JOIN operation
 	- 多個資料表必須透過某種JOIN操作來結合
    		- 當查詢需要從多個表獲取數據時，必須明確指定如何連接這些表
@@ -1236,6 +1236,7 @@ WHERE P_DESCRIPT LIKE '%無線%';
 SELECT * FROM CUSTOMER
 WHERE CUST_PHONE LIKE '02%';
 ```
+**ex:若為'%hammer%'，則hand_hammer_tool、red hammer blade皆匹配**
 
 ##### `%` 與 `_` 的區別
 
@@ -1444,17 +1445,49 @@ AND INVOICE.INV_NUMBER = LINE.INV_NUMBER
 AND PRODUCT.V_CODE = VENDOR.V_CODE;
 ```
 
+<details>
+	<summary><strong>三者比較表</strong></summary>
+	
+| 比較項目        | JOIN ON (現代標準)               | JOIN USING (現代簡化版)         | Old-Style JOIN (傳統寫法)        |
+|----------------|----------------------------------|----------------------------------|----------------------------------|
+| **語法範例**    | `FROM A JOIN B ON A.id = B.id`   | `FROM A JOIN B USING(id)`        | `FROM A, B WHERE A.id = B.id`    |
+| **連接條件**    | 明確用ON指定，靈活               | 自動匹配同名欄位                | 在WHERE子句中指定                |
+| **欄位名稱**    | 可不同名 (`A.col1 = B.col2`)     | 必須完全相同                    | 可不同名                         |
+| **結果欄位**    | 保留兩表原始欄位                 | 合併同名欄位為單一欄位          | 保留兩表原始欄位                 |
+| **非等值連接**  | 支援 (`ON A.id = B.id AND A.date > B.date`) | 僅支援等值連接           | 支援                             |
+| **可讀性**      | 高，連接條件明確                 | 最高，最簡潔                    | 低，條件混在WHERE中              |
+| **維護性**      | 高                               | 高                              | 低                               |
+| **執行效能**    | 相同                             | 相同                            | 相同                             |
+| **推薦程度**    | ⭐⭐⭐⭐⭐ (最推薦)              | ⭐⭐⭐⭐ (同名欄位時推薦)        | ⭐ (不推薦，已淘汰)              |
+
+#### 建議
+
+1. **永遠避免使用 Old-Style JOIN**，因為：
+   - 容易忘記寫WHERE條件導致笛卡爾積
+   - 混合了連接條件和過濾條件，難以維護
+   - 已被SQL標準淘汰
+
+2. **優先使用 JOIN ON**：
+   - 適用所有場景
+   - 明確區分連接條件與過濾條件
+   - 支援複雜連接邏輯
+
+3. **當連接欄位同名時可考慮 USING**：
+   - 使SQL更簡潔
+   - 自動合併同名欄位
+   - 但功能限制較多
+</details>
+
 # Outer Joins
 Three types of outer join: Left (outer) join, Right (outer) join, Full (outer) join
 
 # Left Outer Join
 ```sql
 SELECT column-list
-FROM table1 LEFT[OUTER] JOIN table2 ON join-condition
-
+FROM table1 LEFT[OUTER] JOIN table2 ON join-condition --- OUTER可省略
 SELECT P_CODE, VENDOR.V_CODE, V_NAME
 FROM VENDOR 
-LEFT JOIN PRODUCT ON VENDOR.V_CODE = PRODUCT.V_CODE;
+LEFT JOIN PRODUCT ON VENDOR.V_CODE = PRODUCT.V_CODE; --- ON後面接的東西可以不同
 ```
 
 # Right Outer Join
@@ -1494,9 +1527,6 @@ SELECT column-list FROM table1 CROSS JOIN table2
 SELECT * FROM INVOICE CROSS JOIN LINE;
 ```
 
-# JOINs in MySQL
-![bg right:70% w:90%](files/image/mysql_join.jpg)
-
 # Joining Tables with an Alias
 Using a table alias allows the database programmer to improve the maintainability
 
@@ -1514,6 +1544,81 @@ SELECT E.EMP_NUM, E.EMP_LNAME, E.EMP_MGR, M.EMP_LNAME
 FROM EMP E
 JOIN EMP M ON E.EMP_MGR = M.EMP_NUM;
 ```
+
+#### 查詢功能說明
+
+這個查詢的目的是：
+- 列出每位員工的編號、姓氏
+- 同時顯示該員工的**主管姓名**（而不只是主管編號）
+
+#### 查詢分解
+
+```sql
+SELECT E.EMP_NUM, E.EMP_LNAME, E.EMP_MGR, M.EMP_LNAME
+FROM EMPLOYEE E
+JOIN EMPLOYEE M ON E.EMP_MGR = M.EMP_NUM;
+```
+
+#### 各部分的意義
+
+| 部分 | 說明 |
+|------|------|
+| `EMPLOYEE E` | 為員工表建立別名 E (代表員工角度) |
+| `EMPLOYEE M` | 為員工表建立別名 M (代表主管角度) |
+| `E.EMP_MGR = M.EMP_NUM` | 連接條件：員工的主管編號 = 主管的員工編號 |
+| `M.EMP_LNAME` | 顯示主管的姓氏 |
+
+#### 實際運作方式
+
+1. 資料庫會將 `EMPLOYEE` 表視為兩個邏輯表：
+   - `E`：員工記錄
+   - `M`：主管記錄
+
+2. 對於每位員工，查找 `EMP_MGR` 欄位中指定的主管編號
+
+3. 在主管表(`M`)中找到對應編號的記錄，獲取主管姓名
+
+#### 範例結果
+假設 `EMPLOYEE` 表有以下資料：
+
+| EMP_NUM | EMP_LNAME | EMP_MGR |
+|---------|-----------|---------|
+| 100     | Smith     | NULL    |
+| 101     | Johnson   | 100     |
+| 102     | Williams  | 100     |
+| 103     | Brown     | 101     |
+
+查詢結果將會是：
+
+| EMP_NUM | EMP_LNAME | EMP_MGR | EMP_LNAME (主管) |
+|---------|-----------|---------|------------------|
+| 101     | Johnson   | 100     | Smith            |
+| 102     | Williams  | 100     | Smith            |
+| 103     | Brown     | 101     | Johnson          |
+
+注意：
+- 員工 Smith (EMP_NUM=100) 不會出現在結果中，因為他沒有主管 (EMP_MGR=NULL)
+- 如果想包含沒有主管的員工，應改用 `LEFT JOIN`
+
+#### 這種查詢的常見應用
+
+1. 組織層級結構展示
+2. 員工-主管關係報表
+3. 任何需要從同一表中關聯不同記錄的情況（如產品組件關係、文件版本關係等）
+
+<details>
+	<summary><strong>組織關係架構圖</strong></summary>
+	
+```
+       Smith (100)
+       /      \
+      /        \
+Johnson (101)  Williams (102)
+     |
+     |
+ Brown (103)
+```
+</details>
 
 # Aggregate Processing
 SQL provides useful aggregate functions that count, find minimum and maximum values, calculate averages, etc.
@@ -1620,6 +1725,98 @@ HAVING (SUM(P_QOH * P_PRICE) > 500)
 ORDER BY SUM(P_QOH * P_PRICE) DESC;
 ```
 
+<details>
+	<summary><strong>HAVING的用法</strong></summary>
+
+#### 基本語法結構
+
+```sql
+SELECT 欄位1, 聚合函數(欄位2)
+FROM 資料表
+GROUP BY 欄位1
+HAVING 過濾條件;
+```
+`HAVING` 是 SQL 中用於過濾分組結果的關鍵字，通常與 `GROUP BY` 一起使用。
+#### 與 WHERE 的主要區別
+
+| 特性        | WHERE 子句               | HAVING 子句               |
+|------------|--------------------------|--------------------------|
+| **執行時機** | 在分組前過濾原始資料      | 在分組後過濾聚合結果      |
+| **適用對象** | 原始資料列                | 分組後的聚合結果          |
+| **使用聚合** | 不可直接使用聚合函數      | 必須使用聚合函數          |
+| **效能影響** | 先過濾可減少處理資料量    | 需先完成分組計算          |
+
+#### 實際應用範例
+
+##### 範例1：基本過濾分組結果
+```sql
+-- 找出平均價格超過50元的供應商
+SELECT V_CODE, AVG(P_PRICE) AS 平均價格
+FROM PRODUCT
+GROUP BY V_CODE
+HAVING AVG(P_PRICE) > 50;
+```
+
+##### 範例2：多條件過濾
+```sql
+-- 找出產品數量大於2且平均價格低於100元的供應商
+SELECT V_CODE, COUNT(*) AS 產品數量, AVG(P_PRICE) AS 平均價格
+FROM PRODUCT
+GROUP BY V_CODE
+HAVING COUNT(*) > 2 AND AVG(P_PRICE) < 100;
+```
+
+##### 範例3：與WHERE組合使用
+```sql
+-- 先過濾2023年的產品，再找出總銷售額超過1萬元的類別
+SELECT 類別, SUM(銷售額) AS 總銷售額
+FROM 銷售資料
+WHERE YEAR(銷售日期) = 2023
+GROUP BY 類別
+HAVING SUM(銷售額) > 10000;
+```
+
+#### 注意事項
+
+1. **別名使用**：在HAVING中可以使用SELECT中定義的別名
+   ```sql
+   SELECT V_CODE, AVG(P_PRICE) AS avg_price
+   FROM PRODUCT
+   GROUP BY V_CODE
+   HAVING avg_price > 50;  -- 直接使用別名
+   ```
+
+2. **效能優化**：
+   - 盡量在WHERE中先過濾掉不需要的資料
+   - 對分組欄位建立索引可提升效能
+
+3. **語法順序**：
+   ```sql
+   SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY → LIMIT
+   ```
+
+#### 常見錯誤
+
+1. 在HAVING中使用非聚合欄位：
+   ```sql
+   -- 錯誤示範（V_NAME不是聚合欄位）
+   SELECT V_CODE, V_NAME, AVG(P_PRICE)
+   FROM PRODUCT
+   GROUP BY V_CODE
+   HAVING V_NAME LIKE 'A%';  -- 這會報錯
+   ```
+
+2. 混淆WHERE和HAVING的使用時機：
+   ```sql
+   -- 錯誤示範（應在WHERE中過濾）
+   SELECT V_CODE, AVG(P_PRICE)
+   FROM PRODUCT
+   GROUP BY V_CODE
+   HAVING P_PRICE > 10;  -- 這會報錯
+   ```
+
+</details>
+
 # Subqueries
 We want to generate a list of vendors who do not provide products.
 ```sql
@@ -1635,6 +1832,89 @@ FROM VENDOR
 WHERE V_CODE NOT IN (
     SELECT V_CODE FROM PRODUCT WHERE V_CODE IS NOT NULL);
 ```
+
+<details>
+	<summary><strong>錯誤舉例</strong></summary>
+
+```sql
+-- 查詢A 
+SELECT V_CODE, V_NAME
+FROM VENDOR
+WHERE V_CODE NOT IN (
+    SELECT V_CODE FROM PRODUCT WHERE V_CODE IS NOT NULL
+);
+
+-- 查詢B 
+SELECT V_CODE, V_NAME
+FROM VENDOR
+WHERE V_CODE IN (
+    SELECT V_CODE FROM PRODUCT WHERE V_CODE IS NULL
+);
+```
+
+#### 關鍵差異
+
+| 比較點         | 查詢A                          | 查詢B                          |
+|----------------|-------------------------------|-------------------------------|
+| **邏輯**       | 找出「沒有對應產品」的供應商    | 找出「產品記錄中V_CODE為NULL」的供應商 |
+| **子查詢條件** | `WHERE V_CODE IS NOT NULL`     | `WHERE V_CODE IS NULL`         |
+| **運算子**     | `NOT IN`                      | `IN`                          |
+| **實際結果**   | 返回沒有產品的供應商           | 永遠返回空結果集               |
+
+#### 為什麼查詢B無效？
+
+1. 子查詢 `SELECT V_CODE FROM PRODUCT WHERE V_CODE IS NULL` 會：
+   - 找出所有 PRODUCT 表中 V_CODE 為 NULL 的記錄
+   - 但因為我們在 SELECT 只選 V_CODE，而 V_CODE 本身就是 NULL
+   - 所以子查詢結果是一組 NULL 值（不是具體的供應商代碼）
+
+2. 當使用 `IN` 或 `NOT IN` 與包含 NULL 的子查詢比較時：
+   - SQL 的邏輯規定：任何與 NULL 的比較結果都是「未知」(UNKNOWN)，不是 TRUE
+   - 所以 `V_CODE IN (NULL, NULL,...)` 永遠不會成立
+
+#### 等價改寫
+
+如果要用 `IN` 實現相同功能，應該這樣寫：
+
+```sql
+SELECT V_CODE, V_NAME
+FROM VENDOR
+WHERE V_CODE NOT IN (
+    SELECT DISTINCT V_CODE FROM PRODUCT 
+    WHERE V_CODE IS NOT NULL
+)
+AND V_CODE IS NOT NULL;
+```
+
+#### 實際建議
+
+1. 查找「沒有關聯記錄」的項目時：
+   - 使用 `NOT IN` + 排除子查詢中的 NULL（如查詢A）
+   - 或使用 `NOT EXISTS`（更安全，能自動處理NULL）
+
+2. 避免寫法：
+   ```sql
+   WHERE col IN (SELECT ... WHERE col IS NULL)
+   ```
+   這種模式幾乎總是邏輯錯誤
+
+3. 最推薦的寫法是使用 `LEFT JOIN` + `IS NULL` 或 `NOT EXISTS`：
+   ```sql
+   -- 方法1: LEFT JOIN
+   SELECT V.* 
+   FROM VENDOR V
+   LEFT JOIN PRODUCT P ON V.V_CODE = P.V_CODE
+   WHERE P.V_CODE IS NULL;
+
+   -- 方法2: NOT EXISTS
+   SELECT V_CODE, V_NAME
+   FROM VENDOR V
+   WHERE NOT EXISTS (
+       SELECT 1 FROM PRODUCT P 
+       WHERE P.V_CODE = V.V_CODE
+   );
+   ```
+</details>
 
 # WHERE Subqueries
 ```sql
@@ -1763,6 +2043,70 @@ last outer query finishes (the first SQL statement in the code).
   1. It initiates the outer query.
   2. For each row of the outer query result set, it executes the inner query by passing the outer row to the inner query.
 
+#### 1. 獨立子查詢（Inner Subquery / Non-correlated Subquery）
+
+**特點**：
+- 子查詢可以獨立執行，不依賴外部查詢
+- 執行順序：先執行子查詢 → 將結果傳給外部查詢使用 → 執行外部查詢
+- 效能較好，因為子查詢只執行一次
+
+**範例**：
+```sql
+-- 找出價格高於平均價格的產品
+SELECT * FROM PRODUCT
+WHERE P_PRICE > (
+    SELECT AVG(P_PRICE) FROM PRODUCT  -- 此子查詢可獨立執行
+);
+```
+
+**執行流程**：
+1. 先執行 `SELECT AVG(P_PRICE) FROM PRODUCT` 得到一個平均值（例如 50.00）
+2. 然後執行外部查詢：`SELECT * FROM PRODUCT WHERE P_PRICE > 50.00`
+
+#### 2. 關聯子查詢（Correlated Subquery）
+
+**特點**：
+- 子查詢**不能獨立執行**，依賴外部查詢的當前行
+- 執行順序：
+  - 先執行外部查詢取出第一行
+  - 將該行的值傳給子查詢執行
+  - 重複直到處理完所有行
+- 效能較差，因為子查詢會執行多次（每行一次）
+
+**範例**：
+```sql
+-- 找出各供應商中價格高於該供應商平均價格的產品
+SELECT * FROM PRODUCT P1
+WHERE P_PRICE > (
+    SELECT AVG(P_PRICE) 
+    FROM PRODUCT P2 
+    WHERE P2.V_CODE = P1.V_CODE  -- 引用外部查詢的欄位
+);
+```
+
+**執行流程**：
+1. 從外部查詢 `PRODUCT P1` 取出第一行
+2. 用該行的 `V_CODE` 值執行子查詢，計算該供應商的平均價格
+3. 比較該行產品的價格是否 > 計算出的平均價
+4. 重複以上步驟處理每一行
+
+#### 比較表格
+
+| 特性                | 獨立子查詢                          | 關聯子查詢                          |
+|---------------------|-------------------------------------|-------------------------------------|
+| **執行次數**         | 執行一次                            | 每行執行一次                        |
+| **依賴性**           | 不依賴外部查詢                      | 依賴外部查詢的當前行                |
+| **效能**             | 較好                                | 較差                                |
+| **可讀性**           | 較簡單                              | 較複雜                              |
+| **典型應用**         | 單一值比較                          | 行與行之間的比較                    |
+| **EXISTS 使用**      | 不適用                              | 常用（如 `WHERE EXISTS`）           |
+
+#### 實際應用建議
+1. **優先使用獨立子查詢**：當業務邏輯允許時，因效能較好
+2. **必要時使用關聯子查詢**：當需要比較行與行之間的關係時
+3. **考慮改寫為 JOIN**：許多關聯子查詢可改寫為 JOIN，效能通常更好
+
+
 # Correlated Subqueries (Example)
 List all product sales in which the units sold value is greater than the average units sold value for that product (as opposed to the average for all products).
 1. Compute the average units sold for a product.
@@ -1838,22 +2182,22 @@ SELECT UPPER(LEFT(EMP_LNAME, 3))
 FROM EMP;
 -- Others: SUBSTRING, TRIM, LTRIM, RTRIM
 ```
+
+<details>
+	<summary>圖片</summary>
+
 # MySQL Date/Time Functions
-<div class="middle-grid">
-    <img src="restricted/CTable07_10a.jpg" alt="">
-    <img src="restricted/CTable07_10b.jpg" alt="">
-</div>
+<img width="523" alt="image" src="https://github.com/user-attachments/assets/e58279cd-3ffd-4bbf-adb8-640df18c2323" />
+<img width="523" alt="image" src="https://github.com/user-attachments/assets/82dc3ebd-549d-4c39-a765-d20275d7489f" />
 
 # MySQL Numeric Functions
-<div class="middle-grid">
-    <img src="restricted/CTable07_11.jpg" alt="">
-</div>
+<img width="523" alt="image" src="https://github.com/user-attachments/assets/884958b4-34cd-4645-a88b-6a12db467cc9" />
 
 # MySQL Conversion Functions
-<div class="middle-grid">
-    <img src="restricted/CTable07_13a.jpg" alt="">
-    <img src="restricted/CTable07_13b.jpg" alt="">
-</div>
+<img width="523" alt="image" src="https://github.com/user-attachments/assets/e9a79e53-7ccc-4763-900d-11885682df54" />
+<img width="523" alt="image" src="https://github.com/user-attachments/assets/7eb12e95-71d5-4ba4-a820-7ee36075e5c0" />
+
+</details>
 
 # Relational Set Operators (UNION)
 ```sql
