@@ -940,11 +940,10 @@ SELECT DISTINCT 城市 FROM 客戶;
 - Multiple tables must be combined using a type of JOIN operation
 	- 多個資料表必須透過某種JOIN操作來結合
    		- 當查詢需要從多個表獲取數據時，必須明確指定如何連接這些表
-   		- JOIN操作包括：
-     			- INNER JOIN（內連接）：只返回匹配的行
-     			- LEFT JOIN（左連接）：返回左表所有行，右表不匹配則為NULL
-     			- RIGHT JOIN（右連接）：返回右表所有行，左表不匹配則為NULL
-     			- FULL JOIN（全連接）：返回兩表所有行，不匹配則為NULL
+     		- INNER JOIN（內連接）：只返回匹配的行
+     		- LEFT JOIN（左連接）：返回左表所有行，右表不匹配則為NULL
+     		- RIGHT JOIN（右連接）：返回右表所有行，左表不匹配則為NULL
+     		- FULL JOIN（全連接）：返回兩表所有行，不匹配則為NULL
    		- 舊式語法可以用逗號分隔表名，但這實際上是隱式的CROSS JOIN（笛卡爾積），通常不是我們想要的
 
 # ORDER BY Clause Options
