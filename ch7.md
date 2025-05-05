@@ -842,7 +842,9 @@ FROM PRODUCT;
 
 <details>
 	<summary><strong>SELECT DISTINCT用法</strong></summary>
+	
 `SELECT DISTINCT` 是 MySQL 中用來**去除查詢結果中重複值**的指令，它會返回指定欄位的唯一值（不重複的值）。
+	
 #### 基本語法
 
 ```sql
