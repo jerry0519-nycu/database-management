@@ -933,7 +933,7 @@ SELECT DISTINCT 城市 FROM 客戶;
    	- 例如：`FROM customers` 表示從customers表中獲取數據
    	- 可以指定單個表或多個表（用逗號分隔或使用JOIN）
 - Only columns in tables in FROM clause are available throughout the rest of the query
-  -只有在FROM子句中指定的資料表的欄位，才能在查詢的其他部分使用
+  - 只有在FROM子句中指定的資料表的欄位，才能在查詢的其他部分使用
   	- SELECT、WHERE、GROUP BY等子句只能引用FROM子句中出現的表欄位
   	- 如果嘗試使用不在FROM子句中的表欄位，會產生錯誤
   	- 例如：`SELECT customer_name FROM orders` 會出錯，如果orders表沒有customer_name欄位
