@@ -609,7 +609,8 @@ FROM table_name
 ```
 <details>
 	<summary><strong>SELECT結構</strong></summary>
-	# MySQL SELECT 語句結構解析
+	
+# MySQL SELECT 語句結構解析
 
 這是一個標準的 MySQL SELECT 查詢語句結構，用於從資料表中檢索資料。以下是每個部分的詳細解釋：
 
@@ -997,6 +998,7 @@ WHERE P_CODE < '1558-QW1';
 
 <details>
 	<summary><strong>字串比較</strong></summary>
+	
 ##### 1. 單引號的意義
 - 用於標示**文字字串**（包含字母、數字、符號的組合）
 - 表示 `'1558-QW1'` 是一個整體的字串值，而不是數學運算
