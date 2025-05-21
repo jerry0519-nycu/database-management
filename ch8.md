@@ -832,28 +832,42 @@ insert into state_population values ('Rhode Island', 1097379);
 
 # Procedural SQL Used in Stored Function
 ```sql
+-- 使用 population 資料庫
 use population;
+
+-- 如果 f_get_state_population 函數已存在則刪除
 drop function if exists f_get_state_population;
 
+-- 變更分隔符號以定義函數
 delimiter //
+
+-- 創建函數 f_get_state_population，接收州名參數
 create function f_get_state_population(state_param varchar(100))
-    returns int  -- returns an integer: population
-    deterministic -- always return the same output for the same input (important for caching and optimization) 相同輸入總是返回相同輸出
-    reads sql data -- read data from the database, not modify it
+    returns int  -- 返回值類型為整數（人口數）
+    deterministic -- 確定性函數：相同輸入總是返回相同輸出（利於快取和優化）
+    reads sql data -- 只讀取資料不修改資料
     begin
-        declare population_var int; -- local variable to store the retrieved population.
+        -- 宣告局部變數儲存人口數
+        declare population_var int; 
+        
+        -- 從州人口表查詢指定州的人口數
         select  population
-            into    population_var
+            into    population_var  -- 將結果存入變數
             from    state_population
             where   state = state_param;
+            
+        -- 返回查詢到的人口數
         return(population_var);
     end//
+
+-- 恢復預設分隔符號
 delimiter ;
 
--- Call function
+-- 呼叫函數查詢紐約州人口
 select f_get_state_population('New York');
 
--- Call function from a WHERE clause
+-- 在 WHERE 子句中使用函數：
+-- 查詢人口數大於紐約州的所有州
 select  *
 from    state_population
 where   population > f_get_state_population('New York');
@@ -933,25 +947,47 @@ insert into county_population values ('New York',	'Westchester',	1004457);
 
 # Procedural SQL Used in Stored Procedures
 ```sql
+-- 使用 population 資料庫
 use population;
+
+-- 如果已存在同名預存程序則先刪除
 drop procedure if exists p_set_and_show_state_population;
 
+-- 變更分隔符號以定義程序
 delimiter //
+
+-- 創建預存程序 p_set_and_show_state_population
 create procedure p_set_and_show_state_population(in state_param varchar(100))
     begin
+        -- 宣告變數儲存人口總數
         declare population_var int;
+        
+        -- 先刪除該州在州人口表中的舊數據
         delete from state_population where state = state_param;
-        select sum(population) into   population_var
-            from   county_population
-            where  state = state_param;
-        insert into state_population(state,population) values(state_param, population_var);
-        select concat('Setting the population for ', state_param, ' of ', population_var);
+        
+        -- 從縣人口表計算該州所有縣的人口總和
+        select sum(population) into population_var
+            from county_population
+            where state = state_param;
+        
+        -- 將計算結果插入州人口表
+        insert into state_population(state,population) 
+        values(state_param, population_var);
+        
+        -- 顯示操作結果訊息
+        select concat('已設定 ', state_param, ' 州的人口數為: ', population_var);
     end//
+
+-- 恢復預設分隔符號
 delimiter ;
 
--- Call the p_set_and_show_state_population() procedure
+-- 暫時關閉安全更新模式（允許無WHERE條件的DELETE操作）
 set SQL_SAFE_UPDATES = 0;
+
+-- 呼叫程序處理紐約州數據
 call p_set_and_show_state_population('New York');
+
+-- 恢復安全更新模式
 set SQL_SAFE_UPDATES = 1;
 ```
 
@@ -963,8 +999,6 @@ set SQL_SAFE_UPDATES = 1;
 | `select sum(population) into population_var from county_population where state = state_param;` | 計算該州各縣人口總和 | 讀取 county_population 表 (New York 縣人口總和 = 8.5M + 2.6M + 2.3M = 13.4M) | 不修改表格，僅計算出 population_var = 13,400,000 |
 | `insert into state_population(state,population) values(state_param, population_var);` | 插入新計算的州人口數據 | 向 state_population 表新增一行 | state_population 新增: New York \| 13,400,000 |
 | `select concat(...);` | 顯示結果訊息 | 不影響表格 | 輸出訊息: "Setting the population for New York of 13400000" |
-
-
 
 # Compare Stored Function and Stored Procedure
 Use Case | Stored Procedure | Stored Function
@@ -1070,27 +1104,51 @@ DELIMITER ;
 
 # Conditional Execution
 ```sql
+-- 使用 population 資料庫
 use population;
+
+-- 如果已存在同名預存程序則先刪除
 drop procedure if exists p_compare_population;
+
+-- 變更分隔符號為 // 以定義多語句程序
 delimiter //
-create procedure p_compare_population(in state_param varchar(100))
-    begin
-        declare state_population_var int;
-        declare county_population_var int;
-        select  population into state_population_var
-            from    state_population
-            where   state = state_param;
-        select sum(population) into county_population_var
-            from   county_population
-            where  state = state_param;
-        if (state_population_var = county_population_var) then
-            select 'The population values match';
-        else
-            select 'The population values are different';
-        end if; -- If you want to display one of THREE messages, use the if/elseif/else
-    end//
+
+-- 創建預存程序：比較州人口統計數據
+create procedure p_compare_population(
+    in state_param varchar(100)  -- 輸入參數：州名稱
+)
+begin
+    -- 宣告變數：儲存州級人口統計值
+    declare state_population_var int;
+    
+    -- 宣告變數：儲存縣級人口加總值 
+    declare county_population_var int;
+    
+    -- 從州人口表(state_population)查詢該州的人口數
+    select population into state_population_var
+    from state_population
+    where state = state_param;
+    
+    -- 從縣人口表(county_population)計算該州所有縣的人口總和
+    select sum(population) into county_population_var
+    from county_population
+    where state = state_param;
+    
+    -- 比較兩種統計方式的結果
+    if (state_population_var = county_population_var) then
+        select '人口數據匹配';  -- 相同時顯示
+    else
+        select '人口數據不一致';  -- 不同時顯示
+    end if;
+    
+    -- 註：如需三種以上判斷，可使用 if/elseif/else 結構
+end//
+
+-- 恢復預設分隔符號
 delimiter ;
-call p_compare_population('New York'); -- Call the p_compare_population() procedure
+
+-- 呼叫程序測試：比較紐約州的人口數據
+call p_compare_population('New York');
 ```
 
 # Iteration or Looping
