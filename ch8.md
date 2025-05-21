@@ -750,12 +750,71 @@ VALUES (CUS_CODE_SEQ.NEXTVAL, 'Connery', 'Sean', NULL, '615', '898-2007', 0.00);
 ```
 
 # Procedural SQL
-- <span class="blue-text">Procedural SQL </span>is an extension of SQL that adds procedural programming capabilities (variables, if, loop) to SQL and is designed to run inside the database
+- Procedural SQL is an extension of SQL that adds procedural programming capabilities (variables, if, loop) to SQL and is designed to run inside the database
 - Procedural code is executed as a unit by the DBMS when it is invoked by the end user
 - End users can use procedural SQL to create the following:
   - Stored function (or user defined function)
   - Stored procedures
   - Triggers
+
+<details>
+	<summary><strong>Procedural SQL</strong></summary>
+	
+# 程序式 SQL (Procedural SQL) 解釋
+
+這段內容在講解「程序式 SQL」的概念，這是傳統 SQL 的擴展版本，讓資料庫操作也能像一般程式語言那樣寫邏輯。我將用簡單方式說明：
+
+#### 什麼是程序式 SQL？
+
+想像傳統 SQL 是「單句指令」（像是點餐時說「我要一份漢堡」），而程序式 SQL 則是「完整的食譜」，可以包含：
+- **變數**（像食譜中的計量杯）
+- **條件判斷**（IF...ELSE，像「如果麵粉不夠就多加點水」）
+- **迴圈**（LOOP，像「攪拌直到麵團光滑」）
+
+#### 🏗️ 主要功能元件
+
+1. **預存程序 (Stored Procedures)**
+   - 像資料庫裡的「預錄好的操作腳本」
+   - 範例：處理訂單的完整流程（檢查庫存→扣款→出貨）
+
+2. **使用者定義函數 (Stored Functions)**
+   - 可重複使用的「自訂計算公式」
+   - 範例：計算商品折扣價的函數
+
+3. **觸發器 (Triggers)**
+   - 資料庫的「自動反應機制」
+   - 範例：當庫存量低於5時自動發警報
+
+#### 執行方式
+```sql
+-- 傳統 SQL（一次執行一個動作）
+SELECT * FROM customers WHERE id = 100;
+UPDATE orders SET status = 'shipped' WHERE id = 500;
+
+-- 程序式 SQL（打包成一個完整程序）
+CREATE PROCEDURE ship_order(order_id INT)
+BEGIN
+   -- 這裡可以包含變數、判斷、迴圈等
+   IF (檢查庫存足夠) THEN
+      UPDATE 訂單狀態;
+      減少庫存;
+      記錄出貨日誌;
+   ELSE
+      發送缺貨通知;
+   END IF;
+END;
+
+-- 呼叫時只需執行
+CALL ship_order(500); --call類似啟動資料庫中預先打包好的業務流程的按鈕
+```
+
+#### 實際應用場景
+- 銀行轉帳交易（必須保證扣款與入帳同時完成）
+- 電商訂單處理流程
+- 自動化定期資料清理
+- 複雜的報表生成
+
+</details>
 
 # State_Population Table
 ```sql
@@ -779,7 +838,7 @@ drop function if exists f_get_state_population;
 delimiter //
 create function f_get_state_population(state_param varchar(100))
     returns int  -- returns an integer: population
-    deterministic -- always return the same output for the same input (important for caching and optimization)
+    deterministic -- always return the same output for the same input (important for caching and optimization) 相同輸入總是返回相同輸出
     reads sql data -- read data from the database, not modify it
     begin
         declare population_var int; -- local variable to store the retrieved population.
@@ -800,10 +859,63 @@ from    state_population
 where   population > f_get_state_population('New York');
 ```
 
+<details>
+	<summary><strong>Function語法</strong></summary>
+
+```sql
+-- 1. 基本創建語法
+DELIMITER //
+CREATE FUNCTION 函數名稱(參數 資料類型)
+RETURNS 返回類型
+[DETERMINISTIC]  -- 可選：表示相同輸入有相同輸出
+[READS/MODIFIES SQL DATA]  -- 可選：讀取或修改數據
+BEGIN
+    DECLARE 變數名稱 資料類型;  -- 宣告變數
+    
+    -- 函數邏輯
+    SELECT 欄位 INTO 變數 FROM 表格 WHERE 條件;  -- 查詢數據
+    
+    RETURN 返回值;  -- 必須有RETURN
+END//
+DELIMITER ;
+
+-- 2. 調用函數
+SELECT 函數名稱(參數);
+
+-- 3. 刪除函數
+DROP FUNCTION [IF EXISTS] 函數名稱;
+```
+
+</details>
+
 # Stored Procedures
 - A stored procedure is a named collection of procedural and SQL statements
 - Stored procedures substantially reduce network traffic and increase performance
 - Stored procedures help reduce code duplication by means of code isolation and code sharing 
+
+1. **本質**：
+   - 預存程序是「預先編寫好並儲存在資料庫中的一組操作指令」
+   - 像是一個預錄好的資料庫操作腳本
+
+2. **核心優勢**：
+   - **網路效能提升**：應用程式只需傳送「執行預存程序」的指令，而非大量SQL語句
+   - **執行效率高**：資料庫會預先編譯優化這些程序
+   - **代碼重用**：多個應用程式可呼叫同一個預存程序
+
+3. **實際運作方式**：
+   ```sql
+   -- 傳統方式 (需傳送多條SQL)
+   1. 檢查庫存 → 2. 扣款 → 3. 建立訂單 → 4. 記錄日誌
+   
+   -- 預存程序方式 (只需傳送1次)
+   CALL 處理訂單程序(訂單資料);
+   ```
+
+4. **企業級應用價值**：
+   - 確保業務邏輯一致性
+   - 增強安全性（可限制直接操作表格）
+   - 簡化應用程式開發
+   - 方便集中維護和更新業務邏輯
 
 # Country_Population Table
 ```sql
@@ -842,6 +954,18 @@ set SQL_SAFE_UPDATES = 0;
 call p_set_and_show_state_population('New York');
 set SQL_SAFE_UPDATES = 1;
 ```
+
+#### 程序執行步驟分析
+
+| 程式碼行 | 動作描述 | 對表格的影響 | 執行後狀態變化 |
+|---------|----------|--------------|----------------|
+| `delete from state_population where state = state_param;` | 刪除指定州的舊數據 | 從 state_population 刪除 New York 行 | state_population 表中 New York 記錄被移除 |
+| `select sum(population) into population_var from county_population where state = state_param;` | 計算該州各縣人口總和 | 讀取 county_population 表 (New York 縣人口總和 = 8.5M + 2.6M + 2.3M = 13.4M) | 不修改表格，僅計算出 population_var = 13,400,000 |
+| `insert into state_population(state,population) values(state_param, population_var);` | 插入新計算的州人口數據 | 向 state_population 表新增一行 | state_population 新增: New York \| 13,400,000 |
+| `select concat(...);` | 顯示結果訊息 | 不影響表格 | 輸出訊息: "Setting the population for New York of 13400000" |
+
+
+
 # Compare Stored Function and Stored Procedure
 Use Case | Stored Procedure | Stored Function
 ---------|------------------------|----------------------
@@ -850,6 +974,99 @@ Return value?|Out parameters|Return statement
 Use inside a SELECT statement?|No|Yes
 DETERMINISTIC / NOT DETERMINISTIC?|Optional|Yes
 Invocation| CALL statement |within SQL statements
+
+| 使用情境                | 預存程序 (Stored Procedure)       | 預存函數 (Stored Function)       |
+|------------------------|----------------------------------|----------------------------------|
+| 修改資料 (新增/更新/刪除)? | 是 (可執行 INSERT, UPDATE, DELETE) | 否 (僅能查詢 SELECT)              |
+| 回傳值方式?             | 透過 OUT 輸出參數                 | 使用 RETURN 語句直接回傳          |
+| 能否在 SELECT 語句中使用? | 否                               | 是 (可直接嵌入查詢)               |
+| 是否需要聲明 DETERMINISTIC? | 可選 (非強制)                   | 必須聲明 (需指定是否為確定性函數)  |
+| 呼叫方式                | 使用 CALL 語句呼叫               | 直接在 SQL 語句中嵌入使用         |
+
+## 補充說明：
+1. **DETERMINISTIC** 表示「確定性」函數，相同輸入必定回傳相同輸出
+2. 預存函數就像「自訂公式」，能在查詢中直接當成運算式使用
+3. 預存程序更像「業務流程」，適合封裝複雜的資料操作邏輯
+4. 函數必須有回傳值，程序則透過 OUT 參數間接回傳結果
+
+<details>
+	<summary><strong>Delimeter</strong></summary>
+
+#### 基本定義
+`DELIMITER` 是 MySQL 中用來**暫時改變語句結束符號**的特殊指令，主要用於定義預存程序、函數、觸發器等包含多個 SQL 語句的程式塊。
+
+#### 為什麼需要 DELIMITER？
+
+在 MySQL 中：
+- 預設使用分號 `;` 作為 SQL 語句的結束符號
+- 但預存程序/函數的**主體內也會包含多個分號**
+- 為避免 MySQL 過早解析這些分號導致錯誤，需暫時改用其他符號
+
+#### 標準用法範例
+
+```sql
+-- 1. 先改變結束符號 (例如改為 //)
+DELIMITER //
+
+-- 2. 建立預存程序 (程序體內可正常使用分號)
+CREATE PROCEDURE 程序名稱()
+BEGIN
+    SELECT * FROM 表格1;
+    SELECT * FROM 表格2;
+END//
+
+-- 3. 恢復預設分號
+DELIMITER ;
+```
+
+#### 關鍵特點
+
+| 特性 | 說明 |
+|------|------|
+| 臨時性 | 只影響當前會話(session)，不影響其他連接 |
+| 自定義符號 | 可用任何符號如 `//`、`$$`、`%%` 等 |
+| 必要性 | 定義複雜程序/函數時必用，簡單 SQL 不需 |
+| 作用範圍 | 直到再次改變或恢復預設分號為止 |
+
+#### 實際應用場景
+
+1. **建立預存程序時**
+   ```sql
+   DELIMITER //
+   CREATE PROCEDURE 更新會員等級()
+   BEGIN
+     UPDATE 會員 SET 等級='VIP' WHERE 積分>1000;
+     INSERT INTO 日誌 VALUES('VIP升級完成', NOW());
+   END//
+   DELIMITER ;
+   ```
+
+2. **建立函數時**
+   ```sql
+   DELIMITER $$
+   CREATE FUNCTION 計算折扣(價格 DECIMAL(10,2)) 
+   RETURNS DECIMAL(10,2)
+   BEGIN
+     RETURN 價格 * 0.9;
+   END$$
+   DELIMITER ;
+   ```
+
+3. **建立觸發器時**
+   ```sql
+   DELIMITER %%
+   CREATE TRIGGER 庫存檢查
+   BEFORE INSERT ON 訂單
+   FOR EACH ROW
+   BEGIN
+     IF NEW.數量 > (SELECT 庫存 FROM 產品 WHERE id=NEW.產品ID) THEN
+       SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '庫存不足';
+     END IF;
+   END%%
+   DELIMITER ;
+   ```
+
+</details>
 
 # Conditional Execution
 ```sql
@@ -900,9 +1117,48 @@ call p_more_sensible_loop();
 
 # SELECT Processing with Cursors
 - A cursor is a special construct used to hold data rows returned by a SQL query
+- 游標（Cursor）是一種特殊的結構，用來暫存 SQL 查詢所返回的資料列。
 - To create an explicit cursor, you use the following syntax:
   DECLARE cursor_name CURSOR FOR select-query;
+- 若要建立「明確游標」（explicit cursor），可以使用下列語法：DECLARE 游標名稱 CURSOR FOR 查詢語句;
 - Cursor-style processing involves retrieving data from the cursor one row at a time and copied to variables
+- 游標式的處理方式是：一次從游標中取出一列資料，並將其複製（賦值）到變數中。
+
+##### 說明：
+
+在資料庫中，游標（Cursor)是一種用來「逐列處理查詢結果」的工具。
+一般來說，SQL 查詢會一次性地處理整個結果集；但當你需要「一列一列」地處理資料（例如在儲存程序中使用迴圈處理），就可以使用游標。
+
+##### 使用游標的基本步驟：
+
+1. **宣告游標**（DECLARE）：先定義好這個游標對應哪個查詢。
+
+   ```sql
+   DECLARE my_cursor CURSOR FOR SELECT name FROM students;
+   ```
+
+2. **開啟游標**（OPEN）：開始從資料庫提取結果集。
+
+   ```sql
+   OPEN my_cursor;
+   ```
+
+3. **抓取資料**（FETCH）：每次抓一列，賦值給變數。
+
+   ```sql
+   FETCH my_cursor INTO @student_name;
+   ```
+
+4. **關閉游標**（CLOSE）：使用完後要關閉釋放資源。
+
+   ```sql
+   CLOSE my_cursor;
+   ```
+
+##### **什麼時候需要用游標？**
+- 你需要逐列處理查詢結果時（例如：每列進行額外邏輯判斷或操作）
+- 無法用單一 SQL 語句達成需求時
+- 撰寫複雜儲存程序、觸發器或資料清理邏輯時
 
 # Cursor Example (p_split_big_ny_counties.sql)
 ```sql
