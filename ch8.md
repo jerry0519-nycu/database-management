@@ -759,10 +759,6 @@ VALUES (CUS_CODE_SEQ.NEXTVAL, 'Connery', 'Sean', NULL, '615', '898-2007', 0.00);
 
 <details>
 	<summary><strong>Procedural SQL</strong></summary>
-	
-# 程序式 SQL (Procedural SQL) 解釋
-
-這段內容在講解「程序式 SQL」的概念，這是傳統 SQL 的擴展版本，讓資料庫操作也能像一般程式語言那樣寫邏輯。我將用簡單方式說明：
 
 #### 什麼是程序式 SQL？
 
@@ -1024,7 +1020,60 @@ Invocation| CALL statement |within SQL statements
 4. 函數必須有回傳值，程序則透過 OUT 參數間接回傳結果
 
 <details>
-	<summary><strong>Delimeter</strong></summary>
+	<summary><strong>生活化舉例</strong></summary>
+	
+#### 🏪 預存程序(Stored Procedure) 像「餐廳的套餐服務」
+
+##### 特點：
+- **完整流程**：從點餐到上菜一整套服務
+- **多個動作**：可能包含開胃菜、主菜、甜點等步驟
+- **不一定回傳東西**：主要是完成一系列動作
+- **主動呼叫**：需要明確點餐才會執行
+
+##### 生活實例：
+```sql
+-- 像點一份「牛排套餐」預存程序
+CALL 點牛排套餐(三分熟, 蘑菇醬);
+
+-- 內部可能包含：
+1. 通知廚房做牛排
+2. 準備配菜
+3. 製作飲料
+4. 擺盤上菜
+```
+
+#### 🧮 預存函數(Stored Function) 像「計算機」
+
+##### 特點：
+- **單一計算**：專注完成一個計算任務
+- **必定回傳值**：像計算機顯示結果
+- **嵌入使用**：可以放在任何需要計算的地方
+- **重複使用**：像隨時可用的公式
+
+##### 生活實例：
+```sql
+-- 像計算「折扣價格」函數
+SELECT 商品名稱, 計算折扣價(原價, 會員等級) 
+FROM 商品表;
+
+-- 計算機內部：
+輸入 → 計算 → 輸出結果
+```
+
+#### 🍽️ 實際生活場景對比
+
+| 情境               | 預存程序                         | 預存函數                     |
+|--------------------|----------------------------------|------------------------------|
+| 餐廳點餐           | 點整套套餐服務                   | 計算餐費折扣                 |
+| 銀行業務           | 辦理完整轉帳流程                 | 計算利息                     |
+| 網購               | 處理下單到出貨完整流程           | 計算運費                     |
+| 學校作業           | 完成一份專題報告                 | 計算平均成績                 |
+| 旅行規劃           | 安排完整行程(機票+酒店+景點)     | 換算貨幣匯率                 |
+
+</details>
+
+<details>
+	<summary><strong>Delimiter</strong></summary>
 
 #### 基本定義
 `DELIMITER` 是 MySQL 中用來**暫時改變語句結束符號**的特殊指令，主要用於定義預存程序、函數、觸發器等包含多個 SQL 語句的程式塊。
@@ -1152,24 +1201,43 @@ call p_compare_population('New York');
 ```
 
 # Iteration or Looping
+# 預存程序 p_more_sensible_loop 完整中文註解版
+
 ```sql
+-- 使用 population 資料庫
 use population;
+
+-- 如果已存在同名預存程序則先刪除
 drop procedure if exists p_more_sensible_loop;
+
+-- 變更分隔符號為 // 以定義多語句程序
 delimiter //
+
+-- 創建預存程序：示範一個有限制的迴圈
 create procedure p_more_sensible_loop()
-    begin
-        declare cnt int default 0;
-        msl: loop
-            select concat('Looping Again ', cnt);
-            set cnt = cnt + 1;
-            if cnt = 3 then 
-                leave msl;
-            end if;
-        end loop msl;
-    end//
+begin
+    -- 宣告計數器變數並初始化為0
+    declare cnt int default 0;
+    
+    -- 建立命名迴圈（標籤名為msl，可自訂）
+    msl: loop
+        -- 顯示當前迴圈次數
+        select concat('第 ', cnt, ' 次迴圈執行中');
+        
+        -- 計數器加1
+        set cnt = cnt + 1;
+        
+        -- 檢查是否達到終止條件
+        if cnt = 3 then 
+            leave msl;  -- 跳出迴圈
+        end if;
+    end loop msl;  -- 迴圈結束
+end//
+
+-- 恢復預設分隔符號
 delimiter ;
 
--- Call the procedure p_more_sensible_loop()
+-- 呼叫程序執行迴圈範例
 call p_more_sensible_loop();
 ```
 
@@ -1219,63 +1287,109 @@ call p_more_sensible_loop();
 - 撰寫複雜儲存程序、觸發器或資料清理邏輯時
 
 # Cursor Example (p_split_big_ny_counties.sql)
-```sql
-use population;
-drop procedure if exists p_split_big_ny_counties;
-delimiter //
-create procedure p_split_big_ny_counties()
-    begin
-        declare  v_state       varchar(100);
-        declare  v_county      varchar(100);
-        declare  v_population  int;
-        declare done bool default false;
-        declare county_cursor cursor for select  state, county, population
-                                         from    county_population
-                                         where   state = 'New York' and population > 2000000;
-        declare continue handler for not found set done = true;   
-        open county_cursor;
-        fetch_loop: loop
-            fetch county_cursor into v_state, v_county, v_population;
-            if done then
-                leave fetch_loop;
-            end if;
-            set @cnt = 1;
-            
-            split_loop: loop
-                insert into county_population (state, county, population)
-                    values (v_state,concat(v_county,'-',@cnt), round(v_population/2));
-                set @cnt = @cnt + 1;
-                if @cnt > 2 then
-                    leave split_loop;
-                end if;
-            end loop split_loop;
-    
-            -- delete the original county
-            delete from county_population where state = v_state and county = v_county;
-        end loop fetch_loop;
-        close county_cursor;
-end//
-delimiter ;
-set SQL_SAFE_UPDATES = 0;
-call p_split_big_ny_counties;
-set SQL_SAFE_UPDATES = 1;
 
+```sql
+-- 使用 population 資料庫
+USE population;
+
+-- 如果已存在名為 p_split_big_ny_counties 的程序，就先刪除
+DROP PROCEDURE IF EXISTS p_split_big_ny_counties;
+
+-- 改變 SQL 的結束符號為 //
+DELIMITER //
+
+-- 建立一個儲存程序，用來拆分人口超過兩百萬的紐約州郡
+CREATE PROCEDURE p_split_big_ny_counties()
+BEGIN
+    -- 宣告變數：州名、郡名、人口數
+    DECLARE v_state VARCHAR(100);
+    DECLARE v_county VARCHAR(100);
+    DECLARE v_population INT;
+
+    -- 宣告控制變數 done，預設為 false，當資料抓取完畢時會設為 true
+    DECLARE done BOOL DEFAULT FALSE;
+
+    -- 宣告游標（cursor），用來選取紐約州中人口超過 2,000,000 的郡
+    DECLARE county_cursor CURSOR FOR
+        SELECT state, county, population
+        FROM county_population
+        WHERE state = 'New York' AND population > 2000000;
+
+    -- 當游標沒有資料可抓時，將 done 設為 true
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    -- 開啟游標
+    OPEN county_cursor;
+
+    -- 開始抓取資料的迴圈
+    fetch_loop: LOOP
+        -- 把游標抓到的資料放進變數中
+        FETCH county_cursor INTO v_state, v_county, v_population;
+
+        -- 如果已經沒有資料，就跳出迴圈
+        IF done THEN
+            LEAVE fetch_loop;
+        END IF;
+
+        -- 宣告並初始化計數器變數 @cnt 為 1
+        SET @cnt = 1;
+
+        -- 拆分郡的迴圈，每筆拆成兩筆（模擬把郡分成兩個小郡）
+        split_loop: LOOP
+            -- 插入一筆新資料，郡名加上編號（例如 Bronx-1、Bronx-2），人口數除以二四捨五入
+            INSERT INTO county_population (state, county, population)
+            VALUES (v_state, CONCAT(v_county, '-', @cnt), ROUND(v_population / 2));
+
+            -- 計數器加一
+            SET @cnt = @cnt + 1;
+
+            -- 如果已經新增兩筆，就跳出這個拆分迴圈
+            IF @cnt > 2 THEN
+                LEAVE split_loop;
+            END IF;
+        END LOOP split_loop;
+
+        -- 刪除原本那筆大郡的人口資料
+        DELETE FROM county_population
+        WHERE state = v_state AND county = v_county;
+    END LOOP fetch_loop;
+
+    -- 關閉游標
+    CLOSE county_cursor;
+END//
+-- 將 SQL 結束符號改回 ;
+DELIMITER ;
+
+-- 取消 SQL 安全模式，允許沒有 WHERE 條件的更新與刪除操作
+SET SQL_SAFE_UPDATES = 0;
+
+-- 呼叫剛剛建立的儲存程序
+CALL p_split_big_ny_counties;
+
+-- 執行完後，重新啟用 SQL 安全模式
+SET SQL_SAFE_UPDATES = 1;
 ```
+
 # Stored Procedures with Parameters
 - One of the most valuable features of working with stored procedures is their ability to use parameters
+- 使用儲存程序最有價值的功能之一，就是它能夠使用**參數**。
 - A parameter is a value that is provided to the program at the time of execution
-<div class="middle-grid">
-    <img src="restricted/CFig08_21.jpg" alt="">
-</div>
+- **參數**是指在執行程式時提供給程式的一個值。
 
 # Procedural SQL Used in Triggers
 A trigger is a procedural SQL code automatically invoked by the relational DBMS when a data manipulation event occurs
+觸發器（Trigger）是一段程序式 SQL 程式碼，當資料操作事件（如新增、更新、刪除）發生時，會由關聯式資料庫管理系統（DBMS）自動執行。
 - Trigger is invoked before or after a row is inserted, updated, or deleted (not select)
   - Fire trigger after rows are changed: audit data
+  - 可以用來紀錄（audit）異動，例如建立紀錄表，記下誰什麼時候更改了什麼。
   - Fire trigger before rows are changed: affect data
+  - 可以用來修改或驗證資料，例如限制某些不合法的輸入、或自動填寫欄位。
 - A trigger is associated with a database table
 - Each database table may have one or more triggers
 - A trigger is executed as part of the transaction that triggered it
+- 觸發器的執行與原始的資料操作是綁在同一筆交易內的，這代表：
+	- 如果其中一個步驟失敗，整個交易可以一起回滾（rollback）；
+	- 保證資料一致性與完整性。
 - Triggers are critical to proper database operation and management
 
 # Triggers After Row Changed That Audit Data
@@ -1317,13 +1431,11 @@ begin
 	(audit_datetime,
    audit_user,
    audit_change)
-  values
-  (now(), user(), 
-	 concat(
-	   'New row for payable_id ', new.payable_id,
-		 '. Company: ', new.company,
-		 '. Amount: ', new.amount,
-		 '. Service: ', new.service));
+  VALUES (NOW(), USER(), CONCAT('New row for payable_id ', NEW.payable_id,
+                              '. Company: ', NEW.company,
+                              '. Amount: ', NEW.amount,
+                              '. Service: ', NEW.service)); --concat():組合出一段完整的描述文字（做了什麼），例如New row for payable_id 4. Company: ABC Corp. Amount: 500.00. Service: Consulting
+
 end//
 delimiter ;
 ```
@@ -1339,6 +1451,10 @@ values
 -- Did a row get logged in the payable_audit table showing what was inserted into the payable table?
 select * from payable_audit;
 ```
+結果:
+| audit\_datetime     | audit\_user         | audit\_change                                                                                    |
+| ------------------- | ------------------- | ------------------------------------------------------------------------------------------------ |
+| 2025-05-21 15:20:10 | your\_user\_account | New row for payable\_id 4. Company: Sirius Painting. Amount: 451.45. Service: Painting the lobby |
 
 # After Delete Triggers
 ```sql
@@ -1366,32 +1482,32 @@ delete from payable where company = 'Sirius Painting';
 
 select * from payable_audit;
 ```
+結果:
+| audit_datetime     | audit_user     | audit_change                                                                                        |
+| ------------------- | --------------- | ---------------------------------------------------------------------------------------------------- |
+| 2025-05-21 14:33:00 | root\@localhost | Deleted row for payable\_id 4. Company: Sirius Painting. Amount: 451.45. Service: Painting the lobby |
 
 # After Update Triggers
 ```sql
-delimiter //
-create trigger tr_payable_au after update on payable
-for each row
-begin
-  set @change_msg = 
-	concat('Updated row for payable_id ', old.payable_id);
-  if (old.company != new.company) then
-    set @change_msg = 
-	  concat(@change_msg, '. Company changed from ', old.company, ' to ', new.company);
-  end if;
-  if (old.amount != new.amount) then
-    set @change_msg = 
-	  concat(@change_msg, '. Amount changed from ', old.amount, ' to ', new.amount);
-  end if;
-  if (old.service != new.service) then
-    set @change_msg = 
-	  concat(@change_msg, '. Service changed from ', old.service, ' to ', new.service);
-  end if;
-  insert into payable_audit
-	(audit_datetime, audit_user, audit_change)
-  values(now(), user(), @change_msg);
+delimiter //                                   -- 設定結束符號為 //，方便寫多行觸發器程式
+create trigger tr_payable_au after update on payable  -- 建立觸發器，當 payable 表更新後執行
+for each row                                  -- 每筆被更新的資料都會觸發一次
+begin                                         -- 開始觸發器程式區塊
+  set @change_msg = concat('Updated row for payable_id ', old.payable_id);  -- 宣告變數，初始訊息包含被更新的 paybale_id
+  if (old.company != new.company) then           -- 判斷 company 欄位是否有變更
+    set @change_msg = concat(@change_msg, '. Company changed from ', old.company, ' to ', new.company);  -- 若變更，加入變更前後值描述
+  end if;                                       -- 結束 company 欄位判斷
+  if (old.amount != new.amount) then             -- 判斷 amount 欄位是否有變更
+    set @change_msg = concat(@change_msg, '. Amount changed from ', old.amount, ' to ', new.amount);   -- 若變更，加入變更前後值描述
+  end if;                                       -- 結束 amount 欄位判斷
+  if (old.service != new.service) then           -- 判斷 service 欄位是否有變更
+    set @change_msg = concat(@change_msg, '. Service changed from ', old.service, ' to ', new.service);  -- 若變更，加入變更前後值描述
+  end if;                                       -- 結束 service 欄位判斷
+  insert into payable_audit                     -- 把變更訊息寫入 payable_audit 表
+    (audit_datetime, audit_user, audit_change)
+  values(now(), user(), @change_msg);           -- 記錄變更時間、使用者及變更內容
 end//
-delimiter ;
+delimiter ;                                   -- 恢復結束符號為分號
 ```
 
 # Test Trigger: tr_payable_au
@@ -1404,6 +1520,10 @@ where  payable_id = 3;
 -- Did the update get logged?
 select * from payable_audit;
 ```
+結果:
+| audit_datetime     | audit_user | audit_change                                                                                                               |
+| ------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------- |
+| 2025-05-21 14:30:00 | your_user  | Updated row for payable_id 3. Company changed from Hooli Cleaning to House of Larry. Amount changed from 4398.55 to 100000 |
 
 # Triggers Before Row Changed That Affect Data
 - Before insert triggers
@@ -1457,6 +1577,12 @@ values
 	(2,	'Patty Po', 		  145),
 	(3, 'Vinny Middle-Class', 702);
 ```
+結果:
+| customer\_id | customer\_name     | credit\_score |                         |
+| ------------ | ------------------ | ------------- | ----------------------- |
+| 1            | Milton Megabucks   | 850           | -- 原本是 987，但觸發器限制最高 850 |
+| 2            | Patty Po           | 300           | -- 原本是 145，但觸發器限制最低 300 |
+| 3            | Vinny Middle-Class | 702           | -- 在允許範圍內，不變            |
 
 # Before Update Trigger
 ```sql
@@ -1522,6 +1648,7 @@ set sql_safe_updates = 1;
 
 # Embedded SQL
 - Embedded SQL are SQL statements contained within an application programming language like Python, C, COBOL
+- Embedded SQL 是指在應用程式裡嵌入的 SQL 指令，透過程式語言去執行資料庫操作。
 ```python
 connection = mysql.connector.connect(host_name, user_name, password)
 cursor = connection.cursor()
