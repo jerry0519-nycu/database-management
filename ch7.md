@@ -1706,6 +1706,45 @@ FROM PRODUCT JOIN VENDOR ON PRODUCT.V_CODE = VENDOR.V_CODE
 GROUP BY V_CODE, P_QOH
 ORDER BY V_NAME;
 ```
+<details>
+	<summary><strong>聚合函數(sum, min, count...) & group by</strong></summary>
+
+#### ✅ 有聚合函數時，何時要 `GROUP BY`？
+##### ▶ **1. 有聚合函數 + 有其他欄位 → 要 `GROUP BY`**
+
+常見情況：
+
+```sql
+SELECT PROJ_NUM, SUM(ASSIGN_HOURS)
+FROM ASSIGNMENT;
+```
+
+這樣會 **出錯**，因為你選了 `PROJ_NUM`（不是聚合函數），又用了 `SUM()`，但沒有告訴 SQL 要「怎麼分組」，SQL 不知道你想怎麼加總。
+
+✅ 正確寫法是：
+
+```sql
+SELECT PROJ_NUM, SUM(ASSIGN_HOURS)
+FROM ASSIGNMENT
+GROUP BY PROJ_NUM;
+```
+##### ▶ **2. 只有聚合函數 → 不需要 `GROUP BY`**
+
+```sql
+SELECT SUM(ASSIGN_HOURS) FROM ASSIGNMENT;
+```
+
+這是合法的，表示**對整張表**做加總，不需要分組。
+
+#### 📝 總結
+
+| 條件          | 要加 `GROUP BY` 嗎？ | 說明        |
+| ----------- | ---------------- | --------- |
+| 只用聚合函數      | ❌ 不需要            | 對整張表加總    |
+| 聚合函數 + 普通欄位 | ✅ 需要             | 要分組，不然會報錯 |
+| 沒有聚合函數      | ❌ 不需要            | 正常查詢      |
+
+</details>
 
 # HAVING Clause
 ```sql
