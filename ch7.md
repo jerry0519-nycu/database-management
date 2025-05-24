@@ -1543,7 +1543,7 @@ JOIN VENDOR V ON P.V_CODE = V.V_CODE;
 # Recursive Joins
 A query that joins a table to itself
 ```sql
-SELECT E.EMP_NUM, E.EMP_LNAME, E.EMP_MGR, M.EMP_LNAME
+SELECT E.EMP_NUM, E.EMP_LNAME, E.EMP_MGR, M.EMP_LNAME--E.EMP_NUM:從 E 這個表格中取 EMP_NUM 欄位的值
 FROM EMP E
 JOIN EMP M ON E.EMP_MGR = M.EMP_NUM;
 ```
