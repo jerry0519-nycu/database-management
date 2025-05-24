@@ -284,6 +284,7 @@ DROP INDEX PROD_PRICEX ON PRODUCT;
   - Indexes take up disk space
   - Slow down the speed of writing queries, such as INSERT, UPDATE and DELETE
 
+#### 資料庫建立索引的時候，會自動幫你用某種「資料結構」把資料「有順序地排好」，所以查找才會快，即使你沒有特別指定怎麼排序。
 <details>
   <summary><strong>舉例</strong></summary>
   
