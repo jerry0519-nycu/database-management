@@ -1209,7 +1209,6 @@ call p_compare_population('New York');
 ```
 
 # Iteration or Looping
-# 預存程序 p_more_sensible_loop 完整中文註解版
 
 ```sql
 -- 使用 population 資料庫
