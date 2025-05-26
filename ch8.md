@@ -734,11 +734,11 @@ Indexed Views Not Supported | Views in MySQL cannot have indexes.
 ```sql
 -- In MySQL
 create table arena (
-    arena_id          int  auto_increment, --自動產生流水號，一個資料表只能有一個欄位能設，設完變主鍵
+    arena_id          int  auto_increment, --自動產生流水號，一個資料表只能有一個欄位能設
     arena_name        varchar(100),
     location          varchar(100),
     seating_capacity  int,
-    primary key (arena_id));
+    primary key (arena_id)); --arena_id 是主鍵，並且會自動編號
 -- Loading the data without having to manage arena_id column
 insert into arena (arena_name, location, seating_capacity)
 values ('Madison Square Garden', 'New York', 20000); --第一筆給 arena_id = 1
