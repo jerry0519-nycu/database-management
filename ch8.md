@@ -846,7 +846,7 @@ drop function if exists f_get_state_population;
 delimiter //
 
 -- 創建函數 f_get_state_population，接收州名參數
-create function f_get_state_population(state_param varchar(100))
+create function f_get_state_population(state_param varchar(100)) -- 不能使用create function if not exists f_get_state_population(state_param varchar(100))
     returns int  -- 返回值類型為整數（人口數）
     deterministic -- 確定性函數：相同輸入總是返回相同輸出（利於快取和優化）
     reads sql data -- 只讀取資料不修改資料
