@@ -1655,7 +1655,9 @@ FROM PRODUCT;
 
 SELECT COUNT(DISTINCT V_CODE) AS "COUNT DISTINCT"
 FROM PRODUCT;
+SELECT COUNT(*) FROM table_name; --回傳整個表的行數（總筆數）
 ```
+
 # MIN and MAX
 The MIN and MAX functions help you find answers to problems such as the highest and lowest (maximum and minimum) prices in the PRODUCT table.
 ```sql
