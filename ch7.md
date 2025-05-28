@@ -1205,6 +1205,13 @@ SELECT * FROM PRODUCT
 WHERE P_CODE LIKE '__A__';
 ```
 
+| 比較項目  | `=`                     | `LIKE`                               |
+| ----- | ----------------------- | ------------------------------------ |
+| 用途    | 精準比對                    | 模糊比對                                 |
+| 範例語法  | `WHERE name = 'Peter'`  | `WHERE name LIKE 'Pet%'`             |
+| 結果    | 只有名字是完全等於 Peter 的資料會被選中 | 所有名字開頭是 Pet 的資料都會被選中（例如 Peter、Petra） |
+| 通配符支援 | ❌ 不支援                   | ✅ 支援 `%` 和 `_`                       |
+
 <details>
 	<summary>%的用法</summary>
 
