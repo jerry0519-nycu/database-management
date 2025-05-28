@@ -1450,7 +1450,8 @@ delimiter ;
    - **`NEW`**：代表觸發器正在處理的「新資料」（適用於 `INSERT` 和 `UPDATE`）。  
      - 例如 `NEW.payable_id` 是「即將插入或更新後」的 `payable_id` 值。  
    - **`OLD`**：代表觸發器正在處理的「舊資料」（適用於 `UPDATE` 和 `DELETE`）。  
-     - 例如 `OLD.payable_id` 是「更新或刪除前」的 `payable_id` 值。  
+     - 例如 `OLD.payable_id` 是「更新或刪除前」的 `payable_id` 值。
+
 $\rightarrow$ **不需要額外宣告**
 
 # Test Trigger: tr_payable_ai
