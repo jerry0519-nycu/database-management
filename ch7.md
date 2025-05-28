@@ -1525,11 +1525,8 @@ SELECT P_CODE, VENDOR.V_CODE, V_NAME
 FROM VENDOR
 FULL JOIN PRODUCT ON VENDOR.V_CODE = PRODUCT.V_CODE;
 ```
-<div class="middle-grid">
-    <img src="restricted/CFig07_33.jpg" alt="">
-</div>
 
-### 只有RIGHT/LEFT (OUTER) JOIN 沒有 OUTER JOIN
+**只有RIGHT/LEFT (OUTER) JOIN 沒有 OUTER JOIN**
 
 # Cross Join
 - A cross join performs a relational product (also known as the Cartesian product) of two tables.
