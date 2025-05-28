@@ -1804,7 +1804,7 @@ HAVING 過濾條件;
 SELECT V_CODE, AVG(P_PRICE) AS 平均價格
 FROM PRODUCT
 GROUP BY V_CODE
-HAVING AVG(P_PRICE) > 50;
+HAVING AVG(P_PRICE) > 50; --只能過濾聚合後的結果(例如AVG, COUNT...)
 ```
 
 ##### 範例2：多條件過濾
