@@ -329,6 +329,13 @@ YEAR | YYYY | '2025' | product release year
 | **適用情境**     | 儲存事件發生的絕對時間（如生日）      | 紀錄資料建立/修改時間、自動追蹤變更       |
 - 固定不變時間 → 用 `DATETIME`
 - 需要時區轉換、自動時間戳 → 用 `TIMESTAMP`
+
+| 類型       | `CURRENT_TIMESTAMP`               | `NOW()`                      |
+| -------- | --------------------------------- | ---------------------------- |
+| 作為預設值用   | ✅ 可用於 `DEFAULT CURRENT_TIMESTAMP` | ❌ 不能用 `DEFAULT NOW()`        |
+| 作為查詢或運算用 | ✅ `SELECT CURRENT_TIMESTAMP;`     | ✅ `SELECT NOW();`            |
+| 等價性      | ✅ `CURRENT_TIMESTAMP = NOW()` 等價  | ✅ 與 `CURRENT_TIMESTAMP` 相同效果 |
+
 </details>
 
 # Steps to Develop Database
