@@ -1054,6 +1054,68 @@ call p_set_and_show_state_population('New York');
 set SQL_SAFE_UPDATES = 1;
 ```
 
+<details>
+<summary><strong>Procedure的in, out, inout</strong></summary>
+
+#### ✅ `IN`：輸入參數（Input）
+
+你把一個值「傳進去」給儲存程序使用。
+
+📌 你只能在程式裡 **使用** 它，**不能改變** 它的值。
+
+```sql
+CREATE PROCEDURE say_hello(IN name VARCHAR(50))
+BEGIN
+    SELECT CONCAT('Hello, ', name);
+END;
+```
+
+🔹執行時這樣寫：
+
+```sql
+CALL say_hello('Alice');
+```
+
+#### ✅ `OUT`：輸出參數（Output）
+
+這是從儲存程序裡「傳出一個結果」給外面用。
+
+📌 你**不能傳值進來**，但你可以在程式裡設定這個變數，讓它傳出去。
+
+```sql
+CREATE PROCEDURE get_year_of_birth(IN age INT, OUT year INT)
+BEGIN
+    SET year = YEAR(CURDATE()) - age;
+END;
+```
+
+🔹執行時這樣寫（用變數接）：
+
+```sql
+CALL get_year_of_birth(20, @y);
+SELECT @y;  -- 假如今年是2025，會看到 2005
+```
+
+#### ✅ `INOUT`：輸入＋輸出參數（Input + Output）
+
+這是可以同時「傳進來一個值」然後「再修改後傳出去」。
+
+```sql
+CREATE PROCEDURE double_num(INOUT num INT)
+BEGIN
+    SET num = num * 2;
+END;
+```
+
+🔹執行方式：
+
+```sql
+SET @x = 5;
+CALL double_num(@x);
+SELECT @x;  -- 結果會是 10
+```
+</details>
+
 #### 程序執行步驟分析
 
 | 程式碼行 | 動作描述 | 對表格的影響 | 執行後狀態變化 |
