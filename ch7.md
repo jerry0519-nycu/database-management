@@ -11,7 +11,7 @@
 
 # SQL Statement in MySQL
 - SQL keywords are NOT case sensitive: select is the same as SELECT **(不分大小寫)**
-- Use semicolon **(;)** at the end of each SQL statement to separate each SQL statement
+- Use semicolon **(;)** at the end of each SQL statement to separate each SQL statement **(不用每行都加)**
 - Some of The Most Important SQL Commands
 	- INSERT INTO - [C]reates new data into a database
 	- SELECT - [R]eads data from a database
@@ -150,7 +150,20 @@ SET | A string object that can store multiple predefined values (comma-separated
 - 用 VARCHAR：當欄位內容長度不一，如：姓名、地址、電子郵件。
 - 用 INTEGER：當儲存數值數據時，適用於年齡、數量、識別碼等數字型資料。
 </details>
-	
+
+<details>
+	<summary><strong>enum vs set</strong></summary>
+
+| 項目     | `ENUM`                                     | `SET`                           |
+| ------ | ------------------------------------------ | ------------------------------- |
+| 值的選擇數量 | 只能選一個（單選）                                  | 可選多個（多選），但只能從指定的選項中組合           |
+| 儲存方式   | 儲存單一值的索引                                   | 儲存多個值的位元組合（bit mask）            |
+| 用途     | 欄位值限定為多個選項之一                               | 欄位值可包含多個選項的組合                   |
+| 範例     | `ENUM('small','medium','large')`           | `SET('read','write','execute')` |
+| 取值範圍   | 一個欄位只能有 `'small'` 或 `'medium'` 或 `'large'` | 一個欄位可以同時有 `'read,write'` 等組合    |
+
+</details>
+
 [List of MySQL Data Types](https://www.w3schools.com/mysql/mysql_datatypes.asp)
 
 # MySQL Numeric Data Types - Integer
@@ -314,6 +327,8 @@ YEAR | YYYY | '2025' | product release year
 | **自動更新支援** | ❌ 不自動更新                         | ✅ 可設為 `DEFAULT CURRENT_TIMESTAMP` 或 `ON UPDATE` 自動更新 |
 | **儲存空間**     | 8 bytes                               | 4 bytes（舊版）/ 7 bytes（新版）          |
 | **適用情境**     | 儲存事件發生的絕對時間（如生日）      | 紀錄資料建立/修改時間、自動追蹤變更       |
+- 固定不變時間 → 用 `DATETIME`
+- 需要時區轉換、自動時間戳 → 用 `TIMESTAMP`
 </details>
 
 # Steps to Develop Database
@@ -1333,6 +1348,12 @@ SELECT * FROM PRODUCT WHERE P_CODE LIKE '15%';
 SELECT * FROM PRODUCT WHERE P_CODE LIKE '2232/Q__';
 ```
 
+| 符號  | 意思                 | 用在哪裡         | 範例                                        |
+| --- | ------------------ | ------------ | ----------------------------------------- |
+| `*` | 所有欄位（全部欄位）         | `SELECT` 語句中 | `SELECT * FROM users;`（查詢所有欄位）            |
+| `%` | 匹配 0 個或多個字元（模糊查詢）  | `LIKE` 條件中   | `WHERE name LIKE 'A%'`（找出以 A 開頭的名字）       |
+| `_` | 匹配任意一個字元（固定長度模糊查詢） | `LIKE` 條件中   | `WHERE name LIKE 'A__'(兩個_)`（找出開頭是 A、接兩個字元的名字） |
+
 # MySQL Comparison Operators
 Symbol or keyword(s) | Description
 ---------------------|-------------
@@ -1536,6 +1557,8 @@ SELECT column-list FROM table1 CROSS JOIN table2
 
 SELECT * FROM INVOICE CROSS JOIN LINE;
 ```
+
+**例:A表有3筆資料，B表有4筆資料，cross join後會產生3 $\times$ 4=12筆資料**
 
 # Joining Tables with an Alias
 Using a table alias allows the database programmer to improve the maintainability
@@ -2033,6 +2056,25 @@ WHERE P_QOH * P_PRICE >
 - <span class="small-text"> ANY operator to compare a single value to a list of values and select only the rows for which the inventory cost is greater than any value in the list</span>
 - <span class="small-text"> Use the equal to ANY operator, which would be the equivalent of the IN operator.</span>
 
+<details>
+	<summary><strong>All vs Any</strong></summary>
+
+| 比較        | `ALL`（全部都要符合） | `ANY`（其中一個符合就好） |
+| --------- | ------------- | --------------- |
+| `x > ...` | x 要比**全部都大**  | x 要比**至少一個大**   |
+| `x < ...` | x 要比**全部都小**  | x 要比**至少一個小**   |
+| 結果範圍      | 通常會篩出「最極端」的幾筆 | 通常會篩出比較「寬鬆」的條件  |
+
+補充:也可以用min或max
+| 比較條件            | 意思           | 等效寫法                    |
+| --------------- | ------------ | ----------------------- |
+| `x > ALL (子查詢)` | x 要比「全部的值」大  | `x > (SELECT MAX(...))` |
+| `x > ANY (子查詢)` | x 要比「至少一個值」大 | `x > (SELECT MIN(...))` |
+| `x < ALL (子查詢)` | x 要比「全部的值」小  | `x < (SELECT MIN(...))` |
+| `x < ANY (子查詢)` | x 要比「至少一個值」小 | `x < (SELECT MAX(...))` |
+
+</details>
+
 # FROM Subqueries
 List all customers who purchased both products ('13-Q2/P2', '23109-HB'), not just one.
 ```sql
@@ -2156,6 +2198,13 @@ WHERE P_PRICE > (
 2. **必要時使用關聯子查詢**：當需要比較行與行之間的關係時
 3. **考慮改寫為 JOIN**：許多關聯子查詢可改寫為 JOIN，效能通常更好
 
+| 判斷依據                  | 內部子查詢（Independent Subquery） | 相關子查詢（Correlated Subquery）      |
+| --------------------- | --------------------------- | ------------------------------- |
+| **子查詢內有沒有使用外層查詢的欄位？** | 沒有，子查詢完全獨立執行，沒有用外層表的欄位      | 有，子查詢裡會用到外層查詢表的欄位作為條件           |
+| **執行時機**              | 子查詢先執行一次，結果傳給外層查詢           | 子查詢會為外層查詢的每一筆資料執行一次             |
+| **語法結構**              | 子查詢是完整獨立的 SELECT，不依賴外層資料    | 子查詢裡的 WHERE 或其他子句中會引用外層的表或別名的欄位 |
+| **執行效能**              | 通常較快（只執行一次）                 | 通常較慢（執行次數 = 外層查詢結果筆數）           |
+
 
 # Correlated Subqueries (Example)
 List all product sales in which the units sold value is greater than the average units sold value for that product (as opposed to the average for all products).
@@ -2218,6 +2267,18 @@ SELECT CURTIME();
 ```
 - Aggregate Functions: count(), max(), min(), sum(), avg()
 
+
+| 指令                             | 功能說明          | 範例輸出（假設當下時間是 2025-05-31） |
+| ------------------------------ | ------------- | ------------------------ |
+| `SELECT PI();`                 | 回傳圓周率 π 值     | 3.141592653589793        |
+| `SELECT UPPER("hello world");` | 將字串轉成大寫       | HELLO WORLD              |
+| `SELECT ROUND(2.71828);`       | 四捨五入到整數       | 3                        |
+| `SELECT ROUND(2.71828, 2);`    | 四捨五入到小數點後 2 位 | 2.72                     |
+| `SELECT ROUND(PI());`          | 對 π 進行四捨五入    | 3                        |
+| `SELECT NOW();`                | 回傳當前日期與時間     | 2025-05-31 14:23:45      |
+| `SELECT CURDATE();`            | 回傳當前日期（不含時間）  | 2025-05-31               |
+| `SELECT CURTIME();`            | 回傳當前時間（不含日期）  | 14:23:45                 |
+
 # MySQL String Functions
 ```sql
 SELECT CONCAT(EMP_FNAME, " ", EMP_LNAME)
@@ -2235,6 +2296,19 @@ FROM EMP;
 
 <details>
 	<summary>圖片</summary>
+
+| 函數                         | 說明                     | 範例輸出（假設資料）                                         |
+| -------------------------- | ---------------------- | -------------------------------------------------- |
+| `CONCAT(str1, str2)`       | 字串串接，把多個字串合成一個字串       | `CONCAT('John', ' ', 'Doe')` → "John Doe"          |
+| `FORMAT(number, d)`        | 格式化數字，將數字格式化為字串，d是小數位數 | `FORMAT(12345.678, 0)` → "12,346" (四捨五入取整數並加千分位逗號) |
+| `LEFT(str, n)`             | 從字串左邊擷取n個字元            | `LEFT('Smith', 3)` → "Smi"                         |
+| `RIGHT(str, n)`            | 從字串右邊擷取n個字元            | `RIGHT('Smith', 3)` → "ith"                        |
+| `UPPER(str)`               | 將字串轉成大寫                | `UPPER('abc')` → "ABC"                             |
+| `LOWER(str)`               | 將字串轉成小寫                | `LOWER('ABC')` → "abc"                             |
+| `SUBSTRING(str, pos, len)` | 從字串第pos位置開始擷取len個字元    | `SUBSTRING('abcdef', 2, 3)` → "bcd"                |
+| `TRIM(str)`                | 去除字串兩端的空白              | `TRIM('  hello  ')` → "hello"                      |
+| `LTRIM(str)`               | 去除字串左端的空白              | `LTRIM('  hello')` → "hello"                       |
+| `RTRIM(str)`               | 去除字串右端的空白              | `RTRIM('hello  ')` → "hello"                       |
 
 # MySQL Date/Time Functions
 <img width="523" alt="image" src="https://github.com/user-attachments/assets/e58279cd-3ffd-4bbf-adb8-640df18c2323" />
@@ -2269,9 +2343,17 @@ UNION ALL
 SELECT CUS_LNAME, CUS_FNAME, CUS_INITIAL, CUS_AREACODE, CUS_PHONE
 FROM CUSTOMER_2;
 ```
-<div class="middle-grid">
-    <img src="restricted/CFig07_62.jpg" alt="">
-</div>
+
+<details>
+	<summary><strong>UNION vs UNION ALL</strong></summary>
+
+ | 項目      | UNION             | UNION ALL        |
+| ------- | ----------------- | ---------------- |
+| 功能      | 合併兩個查詢結果並自動去除重複資料 | 合併兩個查詢結果，不去除重複資料 |
+| 執行效率    | 較慢，因為需要去除重複並排序    | 較快，因為直接合併，不用去除重複資料   |
+| 結果是否有重複 | 不會                | 可能會有重複           |
+| 使用情境    | 想要合併且只要不重複的資料     | 想要合併且保留所有資料，包括重複 |
+</details>
 
 # Relational Set Operators (INTERSECT)
 List the customer codes for all customers who are in area code 615 and who have made purchases. (If a customer has made a purchase, there must be an invoice record for that customer.)
@@ -2308,6 +2390,11 @@ AND C.CUS_AREACODE = C2.CUS_AREACODE
 AND C.CUS_PHONE = C2.CUS_PHONE
 WHERE C2.CUS_LNAME IS NULL;
 ```
+
+| 集合運算子          | 功能說明                | MySQL 不支持原因 | MySQL 替代方法                                          | 範例說明          |
+| -------------- | ------------------- | ----------- | --------------------------------------------------- | ------------- |
+| INTERSECT      | 取兩個查詢結果的交集（共有資料）    | MySQL 不支持   | 使用 `INNER JOIN` 或 `EXISTS`                          | 找出兩表中同時存在的資料  |
+| EXCEPT / MINUS | 取第一個查詢結果中有、第二個沒有的資料 | MySQL 不支持   | 使用 `LEFT JOIN` + `WHERE ... IS NULL` 或 `NOT EXISTS` | 找出左表有但右表沒有的資料 |
 
 # Crafting SELECT Queries
 - Know Your Data: the importance of understanding the data model that you are working in cannot be overstated
