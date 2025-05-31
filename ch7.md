@@ -2307,9 +2307,6 @@ FROM EMP;
 -- Others: SUBSTRING, TRIM, LTRIM, RTRIM
 ```
 
-<details>
-	<summary>圖片</summary>
-
 | 函數                         | 說明                     | 範例輸出（假設資料）                                         |
 | -------------------------- | ---------------------- | -------------------------------------------------- |
 | `CONCAT(str1, str2)`       | 字串串接，把多個字串合成一個字串       | `CONCAT('John', ' ', 'Doe')` → "John Doe"          |
@@ -2323,6 +2320,9 @@ FROM EMP;
 | `LTRIM(str)`               | 去除字串左端的空白              | `LTRIM('  hello')` → "hello"                       |
 | `RTRIM(str)`               | 去除字串右端的空白              | `RTRIM('hello  ')` → "hello"                       |
 
+<details>
+	<summary>圖片</summary>
+	
 # MySQL Date/Time Functions
 <img width="523" alt="image" src="https://github.com/user-attachments/assets/e58279cd-3ffd-4bbf-adb8-640df18c2323" />
 <img width="523" alt="image" src="https://github.com/user-attachments/assets/82dc3ebd-549d-4c39-a765-d20275d7489f" />
