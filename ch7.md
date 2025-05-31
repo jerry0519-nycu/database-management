@@ -2050,6 +2050,19 @@ WHERE P_QOH * P_PRICE >
          (SELECT V_CODE
           FROM VENDOR 
           WHERE V_STATE = 'FL'));
+
+--等價於:
+SELECT P_CODE, P_QOH * P_PRICE AS TOTALVALUE
+FROM PRODUCT
+WHERE P_QOH * P_PRICE > (
+    SELECT MAX(P_QOH * P_PRICE)
+    FROM PRODUCT
+    WHERE V_CODE IN (
+        SELECT V_CODE
+        FROM VENDOR
+        WHERE V_STATE = 'FL'
+    )
+);
 ```
 
 - <span class="small-text"> Greater than ALL" is equivalent to "greater than the highest product cost of the list </span>
