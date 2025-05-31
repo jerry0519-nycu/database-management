@@ -549,6 +549,21 @@ WHERE P_PRICE < 50.00
 DELETE FROM PRODUCT
 WHERE P_CODE = 'BRT-345';
 ```
+<details>
+	<summary><strong>Delete vs Truncate</strong></summary>
+
+| 項目                    | `DELETE`                                  | `TRUNCATE`                   |
+| --------------------- | ----------------------------------------- | ---------------------------- |
+| 刪除方式                  | 一筆一筆刪除（有紀錄）                               | 直接重建資料頁（無紀錄）                 |
+| 可加 `WHERE` 條件         | ✅ 可以（可刪部分）                                | ❌ 不行（只能刪全部）                  |
+| 是否可復原（交易中）            | ✅ 可以用 `ROLLBACK` 還原                       | ❌ MySQL 無法還原                 |
+| 執行速度                  | ⏳ 較慢（逐筆刪除）                                | 🚀 非常快（直接重建）                 |
+| 是否重置 `AUTO_INCREMENT` | ❌ 不會                                      | ✅ 會重置為 1                     |
+| 是否觸發 `Trigger`        | ✅ 會觸發                                     | ❌ 不會觸發                       |
+| 鎖定類型                  | 🔒 鎖資料列（Row Lock）                         | 🔒 鎖整張表（Table Lock）          |
+| 語法範例                  | `DELETE FROM table_name WHERE condition;` | `TRUNCATE TABLE table_name;` |
+
+</details>
 
 # Restoring Table Contents
 The ROLLBACK command is used to restore the database table contents to the condition that existed after the last COMMIT statements.
@@ -668,7 +683,7 @@ IF (沒有錯誤) THEN
     PRINT '轉帳成功';
 ELSE
     ROLLBACK;  -- 撤銷轉帳
-    PRINT '轉帳失敗，已復原';
+    PRINT '轉帳失敗，已復原'; //MySQL沒有PRINT，可用SELECT CONCAT
 END IF;
 
 SET AUTOCOMMIT = 1;
@@ -727,6 +742,21 @@ Indexed Views Not Supported | Views in MySQL cannot have indexes.
 | 可巢狀視圖（Nested Views）                  | 可以建立**以其他視圖為基礎的視圖**（即視圖套視圖）。                                                                   |
 | 視圖的相依性（View Dependencies）            | **如果刪除視圖所依賴的資料表**（base table），這個視圖會失效（無法再使用）。                                                  |
 | 不支援索引視圖（Indexed Views Not Supported） | 在 MySQL 中，**視圖不能建立索引**（不像某些其他資料庫，例如 SQL Server）。                                               |
+
+<details>
+	<summary><strong>Table vs View</strong></summary>
+
+ | 項目        | Table（資料表）                          | View（檢視表）                             |
+| --------- | ----------------------------------- | ------------------------------------- |
+| 是否儲存資料    | ✅ 是，實際存有資料                          | ❌ 否，本身不儲存資料，僅是一個查詢的包裝                 |
+| 資料來源      | 直接新增/修改/刪除                          | 來自一個或多個資料表的查詢結果                       |
+| 查詢結果是否會變  | ❌ 不會，資料要手動修改                        | ✅ 會，因為 View 每次查詢時都會重新執行 SELECT        |
+| 更新方式      | 手動透過 `INSERT` / `UPDATE` / `DELETE` | 不需更新，因為每次查詢都會重新讀取資料                   |
+| 是否能用於查詢   | ✅ 可以                                | ✅ 可以，通常用於簡化複雜查詢                       |
+| 是否能用於修改資料 | ✅ 可以                                | ⚠️ 有限制（通常簡單 View 可以修改，複雜的 View 不能）    |
+| 建立語法      | `CREATE TABLE ...`                  | `CREATE VIEW view_name AS SELECT ...` |
+| 常見用途      | 儲存實體資料，支援完整的 CRUD 操作                | 重複使用複雜查詢、保護資料、簡化介面、限制使用者看到的欄位/資料等     |
+</details>
 
 # Auto Increment in MySQL
 - In MySQL, you may set one and only one column with the AUTO_INCREMENT property. If you set one, the column must be defined as the primary key of the table
@@ -935,6 +965,21 @@ DROP FUNCTION [IF EXISTS] 函數名稱;
    - 簡化應用程式開發
    - 方便集中維護和更新業務邏輯
 
+<details>
+	<summary><strong>不能使用create ____ if not exists</strong></summary>
+
+| 物件類型        | 是否支援 `CREATE ... IF NOT EXISTS` | 備註                                                  |
+| ----------- | ------------------------------- | --------------------------------------------------- |
+| `DATABASE`  | 支援                              | 可以同時用 `CREATE DATABASE IF NOT EXISTS`               |
+| `TABLE`     | 支援                              | `CREATE TABLE IF NOT EXISTS` 可以直接用                  |
+| `VIEW`      | 不支援                             | 必須先 `DROP VIEW IF EXISTS` 再 `CREATE VIEW`           |
+| `FUNCTION`  | 不支援                             | 必須先 `DROP FUNCTION IF EXISTS` 再 `CREATE FUNCTION`   |
+| `PROCEDURE` | 不支援                             | 必須先 `DROP PROCEDURE IF EXISTS` 再 `CREATE PROCEDURE` |
+| `TRIGGER`   | 不支援                             | 必須先 `DROP TRIGGER IF EXISTS` 再 `CREATE TRIGGER`     |
+| `EVENT`     | 不支援                             | 必須先 `DROP EVENT IF EXISTS` 再 `CREATE EVENT`         |
+
+</details>
+
 # Country_Population Table
 ```sql
 use population;
@@ -1003,6 +1048,8 @@ set SQL_SAFE_UPDATES = 1;
 | `select sum(population) into population_var from county_population where state = state_param;` | 計算該州各縣人口總和 | 讀取 county_population 表 (New York 縣人口總和 = 8.5M + 2.6M + 2.3M = 13.4M) | 不修改表格，僅計算出 population_var = 13,400,000 |
 | `insert into state_population(state,population) values(state_param, population_var);` | 插入新計算的州人口數據 | 向 state_population 表新增一行 | state_population 新增: New York \| 13,400,000 |
 | `select concat(...);` | 顯示結果訊息 | 不影響表格 | 輸出訊息: "Setting the population for New York of 13400000" |
+
+**要呼叫時用call，因為procedure不會回傳東西**
 
 # Compare Stored Function and Stored Procedure
 Use Case | Stored Procedure | Stored Function
@@ -1377,6 +1424,19 @@ CALL p_split_big_ny_counties;
 SET SQL_SAFE_UPDATES = 1;
 ```
 
+<details>
+	<summary><strong>Declare vs Set</strong></summary>
+
+| 項目       | `DECLARE`                                   | `SET`                     |
+| -------- | ------------------------------------------- | ------------------------- |
+| **用途**   | 宣告變數                                        | 設定變數的值                    |
+| **語法**   | `DECLARE 變數名稱 資料型別 [DEFAULT 值];`            | `SET 變數名稱 = 表達式;`         |
+| **使用時機** | 僅能在 `BEGIN...END` 區塊中（如 procedure、function） | 幾乎任何能使用變數的地方都能使用          |
+| **補充說明** | 不能單獨使用，必須寫在程式區塊內；可搭配 `DEFAULT`              | 可搭配 `DECLARE` 使用，或單獨設定變數值 |
+| **範例**   | `DECLARE v_total INT DEFAULT 0;`            | `SET v_total = 100;`      |
+**declare後面不會加等號**
+</details>
+
 # Stored Procedures with Parameters
 - One of the most valuable features of working with stored procedures is their ability to use parameters
 - 使用儲存程序最有價值的功能之一，就是它能夠使用**參數**。
@@ -1659,6 +1719,18 @@ delete from credit where customer_id = 2;
 
 set sql_safe_updates = 1;
 ```
+
+## MySQL Function / Procedure / Loop / Cursor / Trigger 完整比較表
+
+| 項目         | Function (函數)                                                                 | Procedure (預存程序)                                   | Loop (迴圈)                                     | Cursor (游標)                                  | Trigger (觸發器)                                                                 |
+|--------------|--------------------------------------------------------------------------------|----------------------------------------------------|----------------------------------------------|---------------------------------------------|--------------------------------------------------------------------------------|
+| **定義用途**   | 回傳單一值（可在 SQL 語句中使用）                                                          | 執行複雜程序（可含交易、流程控制）                                   | 重複執行某段程式碼                                      | 逐筆讀取查詢結果集                                     | 自動在資料表事件時執行（INSERT/UPDATE/DELETE）                                                 |
+| **回傳值**    | 必須有 `RETURNS 類型` + `RETURN 值`                                                 | 可選（透過 `OUT` 參數回傳）                                     | 無                                            | 無                                           | 無                                                                             |
+| **必要語法元素** | 1. `RETURNS 類型`<br>2. `BEGIN`<br>3. 邏輯程式碼<br>4. `RETURN 值`<br>5. `END` | 1. 參數宣告（可選）<br>2. `BEGIN`<br>3. 邏輯程式碼<br>4. `END` | 1. `[label:] LOOP`<br>2. 邏輯程式碼<br>3. `LEAVE [label]`<br>4. `END LOOP` | 1. `DECLARE cursor_name CURSOR FOR`<br>2. `OPEN`<br>3. `FETCH INTO`<br>4. `CLOSE` | 1. `BEFORE/AFTER 事件`<br>2. `ON 表名`<br>3. `FOR EACH ROW`<br>4. `BEGIN`<br>5. 觸發邏輯<br>6. `END` |
+| **執行方式**   | `SELECT func();`<br>或賦值給變數                                                         | `CALL proc();`                                      | 只能在 Function/Procedure 內執行                         | 只能在 Procedure 內執行                                | 自動觸發（無法手動呼叫）                                                                   |
+| **參數傳遞**  | 輸入參數（可選）                                                                       | 支援 `IN`/`OUT`/`INOUT` 參數                              | 無                                            | 無                                           | 透過 `NEW`/`OLD` 存取變更的資料                                                          |
+| **作用範圍**   | 全域可用                                                                         | 需明確呼叫 `CALL`                                     | 限所屬程式區塊                                        | 限所屬 Procedure                                 | 綁定至單一資料表                                                                      |
+| **範例情境**   | 計算稅金、格式化字串                                                                 | 每月報表生成、批次資料清理                                      | 重試機制、遞迴計算                                     | 逐筆驗證資料完整性                                    | 自動記錄刪除日誌、檢查欄位有效性                                                              |
 
 # Embedded SQL
 - Embedded SQL are SQL statements contained within an application programming language like Python, C, COBOL
