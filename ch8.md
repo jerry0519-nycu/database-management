@@ -554,6 +554,7 @@ WHERE P_PRICE < 50.00
 | **使用時機** | 僅能在 `BEGIN...END` 區塊中（如 procedure、function） | 幾乎任何能使用變數的地方都能使用          |
 | **補充說明** | 不能單獨使用，必須寫在程式區塊內；可搭配 `DEFAULT`              | 可搭配 `DECLARE` 使用，或單獨設定變數值 |
 | **範例**   | `DECLARE v_total INT DEFAULT 0;`            | `SET v_total = 100;`      |
+
 **declare後面不會加等號**
 </details>
 
