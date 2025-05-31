@@ -544,6 +544,19 @@ WHERE P_PRICE < 50.00
 | 是否可改資料內容 | ❌ 不可以                     | ✅ 可以             |
 | 是否可改欄位型別 | ✅ 可以（例如改 `VARCHAR → INT`） | ❌ 不可以            |
 
+<details>
+	<summary><strong>Declare vs Set</strong></summary>
+
+| 項目       | `DECLARE`                                   | `SET`                     |
+| -------- | ------------------------------------------- | ------------------------- |
+| **用途**   | 宣告變數                                        | 設定變數的值                    |
+| **語法**   | `DECLARE 變數名稱 資料型別 [DEFAULT 值];`            | `SET 變數名稱 = 表達式;`         |
+| **使用時機** | 僅能在 `BEGIN...END` 區塊中（如 procedure、function） | 幾乎任何能使用變數的地方都能使用          |
+| **補充說明** | 不能單獨使用，必須寫在程式區塊內；可搭配 `DEFAULT`              | 可搭配 `DECLARE` 使用，或單獨設定變數值 |
+| **範例**   | `DECLARE v_total INT DEFAULT 0;`            | `SET v_total = 100;`      |
+**declare後面不會加等號**
+</details>
+
 # Deleting Table Rows
 ```sql
 DELETE FROM PRODUCT
@@ -1423,19 +1436,6 @@ CALL p_split_big_ny_counties;
 -- 執行完後，重新啟用 SQL 安全模式
 SET SQL_SAFE_UPDATES = 1;
 ```
-
-<details>
-	<summary><strong>Declare vs Set</strong></summary>
-
-| 項目       | `DECLARE`                                   | `SET`                     |
-| -------- | ------------------------------------------- | ------------------------- |
-| **用途**   | 宣告變數                                        | 設定變數的值                    |
-| **語法**   | `DECLARE 變數名稱 資料型別 [DEFAULT 值];`            | `SET 變數名稱 = 表達式;`         |
-| **使用時機** | 僅能在 `BEGIN...END` 區塊中（如 procedure、function） | 幾乎任何能使用變數的地方都能使用          |
-| **補充說明** | 不能單獨使用，必須寫在程式區塊內；可搭配 `DEFAULT`              | 可搭配 `DECLARE` 使用，或單獨設定變數值 |
-| **範例**   | `DECLARE v_total INT DEFAULT 0;`            | `SET v_total = 100;`      |
-**declare後面不會加等號**
-</details>
 
 # Stored Procedures with Parameters
 - One of the most valuable features of working with stored procedures is their ability to use parameters
