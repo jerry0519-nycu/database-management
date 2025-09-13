@@ -1,3 +1,15 @@
+| 策略類型                            | 原理                    | 風險特性 | 主要工具/例子       |
+| ------------------------------- | --------------------- | ---- | ------------- |
+| 長短倉（Long/Short Equities）        | 買入看漲股票，賣出看衰股票         | 中等   | 股票、ETF        |
+| 可轉換債套利（Convertible Arbitrage）   | 買入可轉債並做空對應股票，套利利差     | 低至中等 | 可轉債、股票        |
+| 問題企業/破產債（Distressed Securities） | 投資財務困難公司債券或股票，期待重組/復甦 | 高    | 破產債、困境股       |
+| 新興市場（Emerging Markets）          | 投資新興國家股票、債券，捕捉高增長     | 高    | 新興市場股票、債券     |
+| 宏觀策略（Global Macro）              | 根據宏觀經濟、利率、匯率、商品趨勢操作   | 高    | 外匯、期貨、債券、股票   |
+| 併購套利（Merger Arbitrage）          | 利用併購公告前後價格差獲利         | 中等   | 目標公司股票、收購公司股票 |
+
+
+
+
 # Chapter8: Advanced SQL
 - Learn how to create a table and modify columns and constrains
 - Learn how to manipulate the contents of the data, using SQL commands to insert, update, and delete rows of data 
